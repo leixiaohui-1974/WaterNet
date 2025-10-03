@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "waternet"
+version = "1.0.0"
+description = "明渠输水系统数字孪生建模框架"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "WaterNet Development Team"}]
+keywords = ["hydraulic modeling", "saint-venant", "digital twin", "open channel flow"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Hydrology",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.20.0",
+    "pandas>=1.3.0",
+    "scipy>=1.7.0",
+    "matplotlib>=3.4.0",
+]
+
+[project.optional-dependencies]
+ml = ["scikit-learn>=1.0.0"]
+optimization = ["cvxpy>=1.2.0"]
+test = ["pytest>=6.0.0", "pytest-cov>=2.12.0"]
+docs = ["sphinx>=4.0.0", "numpydoc>=1.1.0"]
+dev = ["waternet[ml,optimization,test,docs]"]
+
+[project.urls]
+Homepage = "https://github.com/waternet/waternet"
+Documentation = "https://waternet.readthedocs.io"
+Repository = "https://github.com/waternet/waternet.git"
+Issues = "https://github.com/waternet/waternet/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["waternet*"]
+
+[tool.pytest.ini_options]
+testpaths = ["waternet/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--cov=waternet --cov-report=html --cov-report=term-missing"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
