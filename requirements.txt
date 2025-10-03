@@ -1,0 +1,14 @@
+Core Libraries
+numpy
+pandas
+PyYAML
+
+Visualization & Reporting
+matplotlib
+
+Forecasting & Machine Learning
+statsmodels
+scikit-learn
+
+Optimization (for MPC)
+cvxpy
