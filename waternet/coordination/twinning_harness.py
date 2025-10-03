@@ -203,7 +203,7 @@ class SynchronizedTwinningHarness:
             H_up_rom = rom_result['H_out']
             V_rom = rom_result['V']
         except Exception as e:
-            warnings.warn(f\"降阶模型计算失败，步骤{step_index}: {e}\")
+            warnings.warn(f"降阶模型计算失败，步骤{step_index}: {e}")
             Q_out_rom = Q_in
             H_up_rom = H_down + 0.1
             V_rom = 10000.0
@@ -244,7 +244,7 @@ class SynchronizedTwinningHarness:
         return result
     
     def _should_perform_correction(self, step_index: int) -> bool:
-        \"\"\"
+        """
         判断是否应该执行在线校正
         
         Args:
@@ -252,7 +252,7 @@ class SynchronizedTwinningHarness:
             
         Returns:
             bool: True表示应该执行校正
-        \"\"\"
+        """
         # 条件1: 达到校正间隔
         interval_check = (step_index - self._last_correction_step) >= self.correction_interval
         
@@ -269,15 +269,15 @@ class SynchronizedTwinningHarness:
         return interval_check and threshold_check and data_check
     
     def _perform_online_correction(self, recent_results: List[Dict], dt: float):
-        \"\"\"
+        """
         执行在线参数校正
         
         Args:
             recent_results (List[Dict]): 最近的仿真结果
             dt (float): 时间步长
-        \"\"\"
+        """
         try:
-            print(f\"执行在线校正，步骤 {self._step_counter}...\")
+            print(f"执行在线校正，步骤 {self._step_counter}...")
             
             # 准备校正数据
             correction_data = self._prepare_correction_data(recent_results, dt)
@@ -304,7 +304,7 @@ class SynchronizedTwinningHarness:
                 }
                 
                 self._last_correction_step = self._step_counter
-                print(f\"校正成功，新参数: {correction_result['best_parameters']}\")
+                print(f"校正成功，新参数: {correction_result['best_parameters']}")
                 
             else:
                 correction_record = {
@@ -313,12 +313,12 @@ class SynchronizedTwinningHarness:
                     'success': False,
                     'reason': '参数优化失败'
                 }
-                print(\"校正失败\")
+                print("校正失败")
             
             self.correction_history.append(correction_record)
             
         except Exception as e:
-            warnings.warn(f\"在线校正执行失败: {e}\")
+            warnings.warn(f"在线校正执行失败: {e}")
             correction_record = {
                 'step': self._step_counter,
                 'time': self._step_counter * dt,
@@ -328,7 +328,7 @@ class SynchronizedTwinningHarness:
             self.correction_history.append(correction_record)
     
     def _prepare_correction_data(self, recent_results: List[Dict], dt: float) -> Dict[str, Any]:
-        \"\"\"准备校正数据\"\"\"
+        """准备校正数据"""
         Q_in = [r['Q_in'] for r in recent_results]
         H_down = [r['H_down'] for r in recent_results]
         
@@ -339,7 +339,7 @@ class SynchronizedTwinningHarness:
         }
     
     def _update_model_parameters(self, new_params: Dict[str, float]):
-        \"\"\"更新降阶模型参数\"\"\"
+        """更新降阶模型参数"""
         # 这里需要根据具体的模型类型来更新参数
         # 由于参数更新涉及模型内部状态，这里提供一个通用框架
         
@@ -364,7 +364,7 @@ class SynchronizedTwinningHarness:
             self.reduced_order_model._compute_discrete_coefficients()
     
     def _get_current_parameters(self) -> Dict[str, float]:
-        \"\"\"获取当前模型参数\"\"\"
+        """获取当前模型参数"""
         model_type = type(self.reduced_order_model).__name__
         
         if model_type == 'MuskingumModel':
@@ -382,7 +382,7 @@ class SynchronizedTwinningHarness:
             return {}
     
     def _compute_overall_metrics(self, results_df: pd.DataFrame):
-        \"\"\"计算总体性能指标\"\"\"
+        """计算总体性能指标"""
         Q_sv = results_df['Q_out_sv'].values
         Q_rom = results_df['Q_out_rom'].values
         
@@ -412,7 +412,7 @@ class SynchronizedTwinningHarness:
         }
     
     def get_performance_summary(self) -> Dict[str, Any]:
-        \"\"\"获取性能摘要\"\"\"
+        """获取性能摘要"""
         if not self.performance_metrics:
             return {'message': '尚未运行仿真'}
         
@@ -431,7 +431,7 @@ class SynchronizedTwinningHarness:
         }
     
     def reset(self):
-        \"\"\"重置协调器状态\"\"\"
+        """重置协调器状态"""
         self._step_counter = 0
         self._last_correction_step = 0
         self._recent_errors = []
@@ -440,4 +440,4 @@ class SynchronizedTwinningHarness:
         self.performance_metrics = {}
         
         # 重置降阶模型
-        self.reduced_order_model.reset()"
+        self.reduced_order_model.reset()
