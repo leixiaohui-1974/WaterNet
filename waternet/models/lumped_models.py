@@ -90,7 +90,8 @@ class BaseLumpedModel(ABC):
         
         # 状态变量
         self.current_V = initial_V
-        self.current_H = self._safe_V_to_H(initial_V)
+        self.current_H = 0.0  # 初始化为默认值
+        self.current_H = self._safe_V_to_H(initial_V)  # 再计算真实值
         self.current_Q_out = self._safe_H_to_Q(self.current_H)
         self.time = 0.0
         
@@ -139,13 +140,13 @@ class BaseLumpedModel(ABC):
             
             if not np.isfinite(H):
                 warnings.warn(f"V_to_H_func返回非有限值，V={V}")
-                return self.current_H  # 返回当前水位作为默认值
+                return getattr(self, 'current_H', 0.0)  # 返回当前水位或默认值
             
             return float(H)
             
         except Exception as e:
             warnings.warn(f"V_to_H_func计算失败: {e}，使用当前水位")
-            return self.current_H
+            return getattr(self, 'current_H', 0.0)
     
     def _safe_H_to_Q(self, H: float) -> float:
         """安全的水位-出流转换"""
