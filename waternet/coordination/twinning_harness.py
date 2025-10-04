@@ -161,6 +161,52 @@ class SynchronizedTwinningHarness:
         
         return results_df
     
+    def run_simulation(self, Q_in_series: Union[List[float], np.ndarray], 
+                      dt: float,
+                      H_down_series: Optional[Union[List[float], np.ndarray]] = None,
+                      enable_correction: bool = True) -> List[Dict[str, Any]]:
+        """
+        运行孪生仿真（为兼容性提供的简化接口）
+        
+        Args:
+            Q_in_series (Union[List, np.ndarray]): 入流时间序列
+            dt (float): 时间步长（秒）
+            H_down_series (Optional[Union[List, np.ndarray]]): 下游水位序列
+            enable_correction (bool): 是否启用在线校正
+            
+        Returns:
+            List[Dict[str, Any]]: 仿真结果列表
+        """
+        Q_in_array = np.array(Q_in_series)
+        
+        # 如果没有提供下游水位，使用默认值
+        if H_down_series is None:
+            H_down_array = np.full_like(Q_in_array, 99.4)  # 默认下游水位
+        else:
+            H_down_array = np.array(H_down_series)
+        
+        # 调用完整的同步仿真方法
+        results_df = self.run_synchronized_simulation(
+            Q_in_series=Q_in_array,
+            H_down_series=H_down_array,
+            dt=dt,
+            enable_correction=enable_correction
+        )
+        
+        # 转换为字典列表格式
+        results_list = []
+        for _, row in results_df.iterrows():
+            result = {
+                'time': row['time'],
+                'Q_in': row['Q_in'],
+                'hf_Q_out': row.get('Q_out_sv', row['Q_in']),  # 高保真模型输出
+                'rom_Q_out': row.get('Q_out_rom', row['Q_in']),  # 降阶模型输出
+                'sync_error': abs(row.get('Q_out_sv', 0) - row.get('Q_out_rom', 0))
+            }
+            results_list.append(result)
+        
+        return results_list
+    
     def _reset_simulation_state(self):
         """重置仿真状态"""
         self._step_counter = 0

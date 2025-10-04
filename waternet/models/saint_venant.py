@@ -27,6 +27,7 @@ from typing import Dict, List, Callable, Tuple, Optional, Any
 from scipy.optimize import fsolve, brentq
 
 from ..interfaces.hydro_model import HydroModel
+from typing import Union
 
 
 class SaintVenantModel(HydroModel):
@@ -40,16 +41,26 @@ class SaintVenantModel(HydroModel):
     采用Preissmann四点隐式差分格式进行离散化，
     确保数值计算的稳定性和精度。
     
+    Features:
+    - 统一的模型接口
+    - 增强的数值求解器
+    - 内置求解器选择
+    - 高级误差处理
+    - 性能监控
+    
     Attributes:
         upstream_node (str): 上游边界节点名称
         downstream_node (str): 下游边界节点名称  
         sections (List[Dict]): 断面几何数据列表
         internal_nodes (List[str]): 内部计算节点名称列表
         segments (List[Dict]): 分段属性数据列表
+        solver_type (str): 求解器类型 ('standard' 或 'enhanced')
+        enable_performance_monitoring (bool): 是否启用性能监控
     """
     
     def __init__(self, name: str, upstream_node: str, downstream_node: str, 
-                 sections: List[Dict[str, Any]]):
+                 sections: List[Dict[str, Any]], solver_type: str = "standard",
+                 enable_performance_monitoring: bool = False):
         """
         初始化圣维南模型
         
@@ -63,6 +74,8 @@ class SaintVenantModel(HydroModel):
                 - roughness (float): 曼宁糙率系数
                 - area_func (Callable): 面积函数 A(H)
                 - top_width_func (Callable): 水面宽函数 T(H)
+            solver_type (str): 求解器类型 ('standard' 或 'enhanced')
+            enable_performance_monitoring (bool): 是否启用性能监控
                 
         Raises:
             ValueError: 当断面数据不足或格式错误时
@@ -92,6 +105,19 @@ class SaintVenantModel(HydroModel):
         # 存储边界节点
         self.upstream_node = upstream_node
         self.downstream_node = downstream_node
+        
+        # 增强功能配置
+        self.solver_type = solver_type
+        self.enable_performance_monitoring = enable_performance_monitoring
+        
+        # 性能监控
+        if enable_performance_monitoring:
+            self.performance_metrics = {
+                'convergence_history': [],
+                'mass_balance_errors': [],
+                'computational_times': [],
+                'stability_indicators': []
+            }
         
         # 自动生成内部节点和分段
         self._generate_internal_topology()
@@ -557,3 +583,65 @@ class SaintVenantModel(HydroModel):
             summary += f"  断面{i}: 里程{section['mileage']:.1f}m, 高程{section['elevation']:.2f}m\n"
             
         return summary
+    
+    def create_enhanced_solver(self, numerical_config=None, stability_config=None):
+        """
+        创建增强型求解器
+        
+        Args:
+            numerical_config: 数值格式配置
+            stability_config: 稳定性控制配置
+            
+        Returns:
+            EnhancedSaintVenantSolver: 增强型求解器实例
+        """
+        try:
+            from ..tests.deep_channel_testing.enhanced_solver import (
+                EnhancedSaintVenantSolver, NumericalSchemeConfig, StabilityConfig)
+            
+            num_config = numerical_config or NumericalSchemeConfig()
+            stab_config = stability_config or StabilityConfig()
+            
+            return EnhancedSaintVenantSolver(self, num_config, stab_config)
+        except ImportError:
+            warnings.warn("增强型求解器不可用，使用标准求解器")
+            return None
+    
+    def solve_with_enhanced_solver(self, initial_flow: float, downstream_H: float,
+                                  Q_in_series: List[float], H_down_series: List[float],
+                                  dt: float = 60.0) -> Dict[str, Any]:
+        """
+        使用增强型求解器进行非恒定流计算
+        
+        Args:
+            initial_flow: 初始流量
+            downstream_H: 初始下游水位
+            Q_in_series: 上游入流序列
+            H_down_series: 下游水位序列
+            dt: 时间步长
+            
+        Returns:
+            Dict[str, Any]: 求解结果
+        """
+        if self.solver_type != "enhanced":
+            warnings.warn("当前模型不是增强型，切换到增强模式")
+            self.solver_type = "enhanced"
+        
+        enhanced_solver = self.create_enhanced_solver()
+        if enhanced_solver is None:
+            raise RuntimeError("无法创建增强型求解器")
+        
+        # 设置初始条件
+        enhanced_solver.set_initial_conditions(initial_flow, downstream_H)
+        
+        # 进行非恒定流计算
+        results = []
+        for i, (Q_in, H_down) in enumerate(zip(Q_in_series, H_down_series)):
+            step_result = enhanced_solver.solve_time_step(dt, Q_in, H_down)
+            results.append(step_result)
+        
+        return {
+            'time_series': results,
+            'solver_history': enhanced_solver.get_solution_history(),
+            'success': True
+        }

@@ -1,0 +1,42 @@
+boundary_conditions:
+  default_downstream_H: 101.0
+  default_upstream_Q: 50.0
+  downstream_type: level
+  upstream_type: flow
+description: 基于WaterNet项目标准参数的五断面配置
+initial_conditions:
+  initial_flow: 50.0
+  steady_state: true
+name: 标准五断面梯形明渠
+sections:
+- bottom_width: 10.0
+  description: 上游断面
+  elevation: 100.0
+  mileage: 0.0
+  roughness: 0.025
+  side_slope: 1.5
+- bottom_width: 12.0
+  description: 上游过渡断面
+  elevation: 99.5
+  mileage: 500.0
+  roughness: 0.025
+  side_slope: 1.5
+- bottom_width: 10.0
+  description: 中间断面
+  elevation: 99.0
+  mileage: 1000.0
+  roughness: 0.03
+  side_slope: 2.0
+- bottom_width: 15.0
+  description: 下游过渡断面
+  elevation: 98.5
+  mileage: 1500.0
+  roughness: 0.025
+  side_slope: 1.5
+- bottom_width: 12.0
+  description: 下游断面
+  elevation: 98.0
+  mileage: 2000.0
+  roughness: 0.03
+  side_slope: 2.0
+variant: standard

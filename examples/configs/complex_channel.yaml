@@ -1,0 +1,38 @@
+name: complex_trapezoidal_channel
+description: 复杂梯形断面明渠
+sections:
+  - mileage: 0.0
+    elevation: 100.0
+    roughness: 0.030
+    cross_section:
+      type: trapezoidal
+      bottom_width: 8.0
+      side_slope: 2.0
+  - mileage: 250.0
+    elevation: 99.75
+    roughness: 0.028
+    cross_section:
+      type: trapezoidal
+      bottom_width: 9.0
+      side_slope: 1.8
+  - mileage: 500.0
+    elevation: 99.5
+    roughness: 0.027
+    cross_section:
+      type: trapezoidal
+      bottom_width: 10.0
+      side_slope: 1.5
+  - mileage: 750.0
+    elevation: 99.25
+    roughness: 0.025
+    cross_section:
+      type: trapezoidal
+      bottom_width: 11.0
+      side_slope: 1.2
+  - mileage: 1000.0
+    elevation: 99.0
+    roughness: 0.025
+    cross_section:
+      type: trapezoidal
+      bottom_width: 12.0
+      side_slope: 1.0

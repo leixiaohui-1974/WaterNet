@@ -1,41 +1,111 @@
 """
-WaterNet: 明渠输水系统数字孪生建模框架
+WaterNet - 明渠水力模型数字孪生建模框架
 
-WaterNet是一个基于圣维南方程组的明渠水力模型接口系统，
-提供高精度物理模型与多种降阶模型的统一建模框架。
+提供统一的API入口，包括核心模型、参数估计、数字孪生和配置管理功能。
 
-主要模块:
-- interfaces: 模型接口定义
-- models: 物理模型和降阶模型实现  
-- parameter_estimation: 参数辨识算法
-- coordination: 同步孪生协调器
-- utils: 工具函数和公共组件
+Author: WaterNet Development Team
+Date: 2024-10-03
+Version: 1.0.0
 """
 
+# 核心模型
+from .models import (
+    SaintVenantModel,
+    SimplifiedSaintVenantModel,
+    ApproximationMode,
+    ApproximationSelector,
+    HydraulicConditions,
+    GeometryComplexity,
+    AccuracyRequirement,
+    MuskingumModel, 
+    StorageRoutingModel,
+    IntegralDelayZeroModel,
+    WaterBalanceModel,
+    SolverFactory,
+    solve_with_auto_solver
+)
+
+# 配置管理
+from .config import ConfigManager
+
+# 新增：统一配置管理
+try:
+    from .config.standard_five_section import StandardFiveSectionConfig
+except ImportError:
+    StandardFiveSectionConfig = None
+
+# 新增：精度对比器
+try:
+    from .utils.accuracy_comparator import AccuracyComparator
+except ImportError:
+    AccuracyComparator = None
+
+# 参数估计
+try:
+    from .parameter_estimation.estimator import ParameterEstimator
+except ImportError:
+    ParameterEstimator = None
+
+# 数字孪生协调
+try:
+    from .coordination.twinning_harness import SynchronizedTwinningHarness
+except ImportError:
+    SynchronizedTwinningHarness = None
+
+# 简化API工厂函数
+from .utils.model_factory import (
+    create_simple_muskingum,
+    create_simple_storage_routing,
+    create_simple_idz,
+    create_default_physical_relations
+)
+
+# 版本信息
 __version__ = "1.0.0"
 __author__ = "WaterNet Development Team"
+__email__ = "waternet@example.com"
+__license__ = "MIT"
 
-# 导入核心接口
-from .interfaces.hydro_model import HydroModel
-from .models.saint_venant import SaintVenantModel
-from .models.lumped_models import (
-    BaseLumpedModel,
-    WaterBalanceModel, 
-    StorageRoutingModel,
-    MuskingumModel,
-    IntegralDelayZeroModel
-)
-from .parameter_estimation.estimator import ParameterEstimator
-from .coordination.twinning_harness import SynchronizedTwinningHarness
-
+# 对外接口
 __all__ = [
-    'HydroModel',
-    'SaintVenantModel', 
-    'BaseLumpedModel',
-    'WaterBalanceModel',
-    'StorageRoutingModel', 
+    # 核心模型
+    'SaintVenantModel',
+    'SimplifiedSaintVenantModel',
+    'ApproximationMode',
+    'ApproximationSelector',
+    'HydraulicConditions',
+    'GeometryComplexity', 
+    'AccuracyRequirement',
     'MuskingumModel',
+    'StorageRoutingModel', 
     'IntegralDelayZeroModel',
+    'WaterBalanceModel',
+    
+    # 求解器
+    'SolverFactory',
+    'solve_with_auto_solver',
+    
+    # 配置管理
+    'ConfigManager',
+    'StandardFiveSectionConfig',
+    
+    # 高级功能
     'ParameterEstimator',
-    'SynchronizedTwinningHarness'
+    'SynchronizedTwinningHarness',
+    'AccuracyComparator',
+    
+    # 简化API
+    'create_simple_muskingum',
+    'create_simple_storage_routing',
+    'create_simple_idz',
+    'create_default_physical_relations',
+    'create_model_by_scenario',
+    'quick_muskingum',
+    'quick_storage',
+    'quick_idz',
+    'auto_model',
+    
+    # 元信息
+    '__version__',
+    '__author__',
 ]

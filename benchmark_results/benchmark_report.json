@@ -1,0 +1,121 @@
+{
+  "summary": {
+    "performance": {
+      "fastest_model": "SaintVenant_Simple",
+      "highest_throughput": "Muskingum_Fast",
+      "average_success_rate": 1.0
+    },
+    "accuracy": {
+      "tests_passed": 0,
+      "total_tests": 1,
+      "pass_rate": 0.0
+    },
+    "stability": {
+      "stable_tests": 4,
+      "total_tests": 4,
+      "stability_rate": 1.0
+    }
+  },
+  "detailed_results": {
+    "model_performance": [
+      {
+        "test_type": "steady",
+        "n_tests": 50,
+        "total_time": 0.0025377273559570312,
+        "avg_time": 5.0754547119140624e-05,
+        "min_time": 3.886222839355469e-05,
+        "max_time": 0.00010085105895996094,
+        "success_rate": 1.0,
+        "throughput": 19702.668169860954,
+        "creation_time": 6.318092346191406e-05,
+        "model_name": "SaintVenant_Simple",
+        "model_type": "saint_venant"
+      },
+      {
+        "test_type": "steady",
+        "n_tests": 50,
+        "total_time": 0.0299530029296875,
+        "avg_time": 0.00059906005859375,
+        "min_time": 0.00042748451232910156,
+        "max_time": 0.0018939971923828125,
+        "success_rate": 1.0,
+        "throughput": 1669.2817116658177,
+        "creation_time": 0.00018548965454101562,
+        "model_name": "SaintVenant_Complex",
+        "model_type": "saint_venant"
+      },
+      {
+        "test_type": "unsteady",
+        "n_steps": 100,
+        "total_time": 0.0037109851837158203,
+        "avg_time_per_step": 3.7109851837158204e-05,
+        "success": true,
+        "throughput": 26947.02216511404,
+        "creation_time": 0.00018596649169921875,
+        "model_name": "Muskingum_Fast",
+        "model_type": "muskingum"
+      },
+      {
+        "test_type": "unsteady",
+        "n_steps": 100,
+        "total_time": 0.010392904281616211,
+        "avg_time_per_step": 0.00010392904281616212,
+        "success": true,
+        "throughput": 9621.949484985433,
+        "creation_time": 0.00014400482177734375,
+        "model_name": "StorageRouting_Standard",
+        "model_type": "storage_routing"
+      }
+    ],
+    "solver_performance": [],
+    "memory_usage": [],
+    "accuracy_tests": [
+      {
+        "test": "mass_conservation",
+        "reference_volume": 1200.0,
+        "computed_volume": 2000.0000000000284,
+        "relative_error": 0.6666666666666904,
+        "passed": "False"
+      }
+    ],
+    "stability_tests": [
+      {
+        "test": "extreme_input_0",
+        "input_type": "minimal",
+        "stable": "True",
+        "max_output": 25.0,
+        "min_output": 3.196900260587567,
+        "has_nan": "False",
+        "has_inf": "False"
+      },
+      {
+        "test": "extreme_input_1",
+        "input_type": "maximal",
+        "stable": "True",
+        "max_output": 87.38566863810593,
+        "min_output": 0.7731958762886606,
+        "has_nan": "False",
+        "has_inf": "False"
+      },
+      {
+        "test": "extreme_input_2",
+        "input_type": "noisy",
+        "stable": "True",
+        "max_output": 25.0,
+        "min_output": 9.455669536852373,
+        "has_nan": "False",
+        "has_inf": "False"
+      },
+      {
+        "test": "extreme_input_3",
+        "input_type": "step",
+        "stable": "True",
+        "max_output": 32.26938407150453,
+        "min_output": 0.7867391298935793,
+        "has_nan": "False",
+        "has_inf": "False"
+      }
+    ]
+  },
+  "recommendations": []
+}
