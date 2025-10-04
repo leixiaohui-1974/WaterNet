@@ -1,0 +1,171 @@
+{
+  "statistics": {
+    "total_tests": 10,
+    "passed": 4,
+    "failed": 6,
+    "warnings": 0,
+    "total_time": 1.6809911727905273
+  },
+  "issues_by_level": {
+    "严重": [],
+    "重要": [
+      {
+        "category": "文档完整性",
+        "test_name": "必需章节",
+        "level": "EvaluationLevel.MAJOR",
+        "status": "FAIL",
+        "message": "缺少必需章节: 边界条件框架概述, API参考, 配置示例",
+        "execution_time": 0.0003521442413330078,
+        "details": null
+      },
+      {
+        "category": "文档完整性",
+        "test_name": "API覆盖",
+        "level": "EvaluationLevel.MAJOR",
+        "status": "FAIL",
+        "message": "未文档化的核心类: ControlSignals",
+        "execution_time": 0.0004730224609375,
+        "details": null
+      },
+      {
+        "category": "示例代码验证",
+        "test_name": "语法检查",
+        "level": "EvaluationLevel.MAJOR",
+        "status": "FAIL",
+        "message": "语法错误: 代码块14: unexpected indent (<unknown>, line 2)",
+        "execution_time": 0.004465579986572266,
+        "details": null
+      },
+      {
+        "category": "示例代码验证",
+        "test_name": "代码执行",
+        "level": "EvaluationLevel.MAJOR",
+        "status": "FAIL",
+        "message": "代码执行错误: 代码块2: Traceback (most recent call last):\n  File \"C:\\Users\\lxh\\AppData\\Local\\Temp\\waternet_doc_eval_iu0wzwa4\\test_example_1.py\", line 6, in <module>\n    time_func = create_time_series_function(\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^\nNameError: name 'create_time_series_function' is not defined; 代码块4: Traceback (most recent call last):\n  File \"C:\\Users\\lxh\\AppData\\Local\\Temp\\waternet_doc_eval_iu0wzwa4\\test_example_3.py\", line 11, in <module>\n    schedule = ControlSchedule(schedule_data, interpolation_method=\"linear\")\n               ^^^^^^^^^^^^^^^\nNameError: name 'ControlSchedule' is not defined; 代码块10: Traceback (most recent call last):\n  File \"C:\\Users\\lxh\\AppData\\Local\\Temp\\waternet_doc_eval_iu0wzwa4\\test_example_9.py\", line 5, in <module>\n    class CustomBoundary(BoundaryCondition):\n                         ^^^^^^^^^^^^^^^^^\nNameError: name 'BoundaryCondition' is not defined",
+        "execution_time": 0.0,
+        "details": null
+      },
+      {
+        "category": "用户场景模拟",
+        "test_name": "场景执行",
+        "level": "EvaluationLevel.MAJOR",
+        "status": "FAIL",
+        "message": "失败场景: _scenario_basic_boundary_creation, _scenario_control_signals_usage, _scenario_config_file_usage, _scenario_solver_integration",
+        "execution_time": 0.00047588348388671875,
+        "details": null
+      },
+      {
+        "category": "API准确性",
+        "test_name": "接口一致性",
+        "level": "EvaluationLevel.MAJOR",
+        "status": "FAIL",
+        "message": "API问题: FlowBoundary验证失败: FlowBoundary.__init__() got an unexpected keyword argument 'node_id'",
+        "execution_time": 3.147125244140625e-05,
+        "details": null
+      }
+    ],
+    "轻微": [],
+    "建议": []
+  },
+  "total_score": 10,
+  "recommendations": [
+    "优先处理重要问题",
+    "文档需要大幅改进",
+    "建议重新组织文档结构"
+  ],
+  "all_results": [
+    {
+      "category": "文档存在性",
+      "test_name": "文档内容",
+      "level": "EvaluationLevel.MINOR",
+      "status": "PASS",
+      "message": "文档文件正常 (12274 bytes)",
+      "execution_time": 0.00011968612670898438,
+      "details": null
+    },
+    {
+      "category": "文档存在性",
+      "test_name": "文档编码",
+      "level": "EvaluationLevel.MINOR",
+      "status": "PASS",
+      "message": "文档UTF-8编码正常",
+      "execution_time": 0.0005862712860107422,
+      "details": null
+    },
+    {
+      "category": "文档完整性",
+      "test_name": "必需章节",
+      "level": "EvaluationLevel.MAJOR",
+      "status": "FAIL",
+      "message": "缺少必需章节: 边界条件框架概述, API参考, 配置示例",
+      "execution_time": 0.0003521442413330078,
+      "details": null
+    },
+    {
+      "category": "文档完整性",
+      "test_name": "API覆盖",
+      "level": "EvaluationLevel.MAJOR",
+      "status": "FAIL",
+      "message": "未文档化的核心类: ControlSignals",
+      "execution_time": 0.0004730224609375,
+      "details": null
+    },
+    {
+      "category": "示例代码验证",
+      "test_name": "代码存在性",
+      "level": "EvaluationLevel.MINOR",
+      "status": "PASS",
+      "message": "发现 14 个Python代码示例",
+      "execution_time": 0.0006859302520751953,
+      "details": null
+    },
+    {
+      "category": "示例代码验证",
+      "test_name": "语法检查",
+      "level": "EvaluationLevel.MAJOR",
+      "status": "FAIL",
+      "message": "语法错误: 代码块14: unexpected indent (<unknown>, line 2)",
+      "execution_time": 0.004465579986572266,
+      "details": null
+    },
+    {
+      "category": "示例代码验证",
+      "test_name": "代码执行",
+      "level": "EvaluationLevel.MAJOR",
+      "status": "FAIL",
+      "message": "代码执行错误: 代码块2: Traceback (most recent call last):\n  File \"C:\\Users\\lxh\\AppData\\Local\\Temp\\waternet_doc_eval_iu0wzwa4\\test_example_1.py\", line 6, in <module>\n    time_func = create_time_series_function(\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^\nNameError: name 'create_time_series_function' is not defined; 代码块4: Traceback (most recent call last):\n  File \"C:\\Users\\lxh\\AppData\\Local\\Temp\\waternet_doc_eval_iu0wzwa4\\test_example_3.py\", line 11, in <module>\n    schedule = ControlSchedule(schedule_data, interpolation_method=\"linear\")\n               ^^^^^^^^^^^^^^^\nNameError: name 'ControlSchedule' is not defined; 代码块10: Traceback (most recent call last):\n  File \"C:\\Users\\lxh\\AppData\\Local\\Temp\\waternet_doc_eval_iu0wzwa4\\test_example_9.py\", line 5, in <module>\n    class CustomBoundary(BoundaryCondition):\n                         ^^^^^^^^^^^^^^^^^\nNameError: name 'BoundaryCondition' is not defined",
+      "execution_time": 0.0,
+      "details": null
+    },
+    {
+      "category": "用户场景模拟",
+      "test_name": "场景执行",
+      "level": "EvaluationLevel.MAJOR",
+      "status": "FAIL",
+      "message": "失败场景: _scenario_basic_boundary_creation, _scenario_control_signals_usage, _scenario_config_file_usage, _scenario_solver_integration",
+      "execution_time": 0.00047588348388671875,
+      "details": null
+    },
+    {
+      "category": "API准确性",
+      "test_name": "接口一致性",
+      "level": "EvaluationLevel.MAJOR",
+      "status": "FAIL",
+      "message": "API问题: FlowBoundary验证失败: FlowBoundary.__init__() got an unexpected keyword argument 'node_id'",
+      "execution_time": 3.147125244140625e-05,
+      "details": null
+    },
+    {
+      "category": "易用性评估",
+      "test_name": "综合评分",
+      "level": "EvaluationLevel.MINOR",
+      "status": "PASS",
+      "message": "文档易用性良好 (评分: 80.0/100)",
+      "execution_time": 0.000659942626953125,
+      "details": {
+        "score": 80.0,
+        "notes": []
+      }
+    }
+  ]
+}
