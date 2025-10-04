@@ -1,0 +1,402 @@
+components:
+  channels:
+    渠段1:
+      description: 进水稳流段
+      discretization:
+        num_segments: 10
+        solver_type: preissmann
+      geometry:
+        bottom_elevation_downstream: 94.5
+        bottom_elevation_upstream: 95.0
+        bottom_slope: 0.001
+        bottom_width: 10.0
+        length: 500.0
+        side_slope: 1.5
+      hydraulics:
+        minimum_depth: 0.1
+        roughness_coefficient: 0.025
+      location:
+        downstream_node: 渠段1终点
+        upstream_node: 渠段1起点
+      type: channel_segment
+    渠段2:
+      description: 主输水段
+      discretization:
+        num_segments: 15
+        solver_type: preissmann
+      geometry:
+        bottom_elevation_downstream: 93.86
+        bottom_elevation_upstream: 94.5
+        bottom_slope: 0.0008
+        bottom_width: 12.0
+        length: 800.0
+        side_slope: 1.5
+      hydraulics:
+        minimum_depth: 0.1
+        roughness_coefficient: 0.025
+      location:
+        downstream_node: 渠段2终点
+        upstream_node: 渠段1终点
+      type: channel_segment
+    渠段3:
+      description: 出水段
+      discretization:
+        num_segments: 12
+        solver_type: preissmann
+      geometry:
+        bottom_elevation_downstream: 93.02
+        bottom_elevation_upstream: 93.86
+        bottom_slope: 0.0012
+        bottom_width: 10.0
+        length: 700.0
+        side_slope: 1.5
+      hydraulics:
+        minimum_depth: 0.1
+        roughness_coefficient: 0.025
+      location:
+        downstream_node: 渠段3终点
+        upstream_node: 渠段2终点
+      type: channel_segment
+  gate_stations:
+    上游闸站:
+      control_strategy:
+        flow_distribution:
+        - 0.3
+        - 0.4
+        - 0.3
+        mode: coordinated
+        priority_sequence:
+        - 2
+        - 1
+        - 3
+      description: 上游三孔闸站
+      gates:
+      - discharge_coefficient: 0.65
+        initial_opening: 0.8
+        max_opening: 4.0
+        name: 1号闸门
+        width: 8.0
+      - discharge_coefficient: 0.7
+        initial_opening: 1.0
+        max_opening: 5.0
+        name: 2号闸门
+        width: 10.0
+      - discharge_coefficient: 0.65
+        initial_opening: 0.8
+        max_opening: 4.0
+        name: 3号闸门
+        width: 8.0
+      location:
+        downstream_node: 渠段1起点
+        upstream_node: 上游节点
+      type: multi_gate_station
+    下游闸站:
+      control_strategy:
+        flow_distribution:
+        - 0.3
+        - 0.4
+        - 0.3
+        mode: coordinated
+        priority_sequence:
+        - 2
+        - 1
+        - 3
+      description: 下游三孔闸站
+      gates:
+      - discharge_coefficient: 0.65
+        initial_opening: 1.2
+        max_opening: 4.0
+        name: 1号闸门
+        width: 8.0
+      - discharge_coefficient: 0.7
+        initial_opening: 1.5
+        max_opening: 5.0
+        name: 2号闸门
+        width: 10.0
+      - discharge_coefficient: 0.65
+        initial_opening: 1.2
+        max_opening: 4.0
+        name: 3号闸门
+        width: 8.0
+      location:
+        downstream_node: 下游节点
+        upstream_node: 渠段3终点
+      type: multi_gate_station
+  gates:
+    上游闸门:
+      control:
+        initial_opening: 1.0
+        max_opening: 5.0
+        min_opening: 0.0
+      description: 控制进入明渠的流量
+      geometry:
+        bottom_elevation: 95.0
+        width: 10.0
+      hydraulics:
+        discharge_coefficient: 0.65
+        free_flow_formula: orifice
+        submerged_flow_formula: submerged_orifice
+        submerged_threshold: 0.7
+      location:
+        downstream_node: 渠段1起点
+        upstream_node: 上游节点
+      type: single_gate
+    下游闸门:
+      control:
+        initial_opening: 1.5
+        max_opening: 5.0
+        min_opening: 0.0
+      description: 控制流出明渠的流量
+      geometry:
+        bottom_elevation: 85.0
+        width: 12.0
+      hydraulics:
+        discharge_coefficient: 0.65
+        free_flow_formula: orifice
+        submerged_flow_formula: submerged_orifice
+        submerged_threshold: 0.7
+      location:
+        downstream_node: 下游节点
+        upstream_node: 渠段3终点
+      type: single_gate
+  reservoirs:
+    上游水库:
+      capacity: 5000000.0
+      connected_node: 上游节点
+      description: 上游恒定水位水库，作为无限水源
+      level: 120.0
+      max_adjustment_rate: 10000.0
+      reservoir_type: upstream
+      type: constant_level
+    下游水库:
+      capacity: 3000000.0
+      connected_node: 下游节点
+      description: 下游恒定水位水库，作为无限汇点
+      level: 100.0
+      max_adjustment_rate: 10000.0
+      reservoir_type: downstream
+      type: constant_level
+output:
+  reports:
+    generate_summary: true
+    include_plots: true
+    plot_formats:
+    - png
+    - pdf
+    template: engineering_report
+  results:
+    directory: results
+    formats:
+    - csv
+    - json
+    - hdf5
+    include_metadata: true
+  visualization_output:
+    animation_fps: 10
+    image_resolution: high
+    save_animation: true
+    save_topology_diagrams: true
+simulation:
+  initial_conditions:
+    manual_water_levels:
+      上游节点: 120.0
+      下游节点: 100.0
+      渠段1终点: 104.5
+      渠段1起点: 105.0
+      渠段2终点: 103.8
+      渠段3终点: 102.5
+    max_steady_iterations: 100
+    method: steady_state
+    steady_state_tolerance: 1e-4
+  solver:
+    convergence_tolerance: 1e-6
+    enable_mass_balance_check: true
+    mass_balance_tolerance: 1e-4
+    max_iterations: 20
+    relaxation_factor: 0.8
+    type: enhanced
+  time:
+    adaptive_timestep: true
+    end_time: 7200.0
+    initial_time_step: 10.0
+    max_time_step: 60.0
+    min_time_step: 1.0
+    start_time: 0.0
+system:
+  author: WaterNet Development Team
+  created_date: '2024-10-05'
+  description: 双恒水位水库通过明渠连接，中间设置闸门进行流量控制
+  name: 水库-闸门-明渠系统
+  version: '1.0'
+test_cases:
+  steady_flow_tests:
+    基础工况:
+      description: 基础恒定流工况
+      expected_results:
+        flow_rate_range:
+        - 15.0
+        - 25.0
+        max_velocity: 2.0
+      gate_settings:
+        上游闸门: 1.0
+        下游闸门: 1.5
+    大开度工况:
+      description: 大开度恒定流工况
+      expected_results:
+        flow_rate_range:
+        - 40.0
+        - 60.0
+        max_velocity: 3.0
+      gate_settings:
+        上游闸门: 2.0
+        下游闸门: 2.5
+    小开度工况:
+      description: 小开度恒定流工况
+      expected_results:
+        flow_rate_range:
+        - 5.0
+        - 12.0
+        max_velocity: 1.5
+      gate_settings:
+        上游闸门: 0.5
+        下游闸门: 0.8
+  unsteady_flow_tests:
+    单闸门阶跃:
+      analysis_metrics:
+      - response_time
+      - overshoot
+      - settling_time
+      - steady_state_error
+      control_sequence:
+      - action: set_gate_opening
+        target: 上游闸门
+        time: 600.0
+        value: 2.0
+      description: 上游闸门开度阶跃变化
+      initial_conditions:
+        上游闸门: 1.0
+        下游闸门: 1.5
+    双闸门协调:
+      analysis_metrics:
+      - system_response
+      - flow_distribution
+      - water_level_variation
+      control_sequence:
+      - action: set_gate_opening
+        target: 上游闸门
+        time: 300.0
+        value: 1.8
+      - action: set_gate_opening
+        target: 下游闸门
+        time: 900.0
+        value: 0.6
+      description: 双闸门协调控制测试
+      initial_conditions:
+        上游闸门: 1.0
+        下游闸门: 1.0
+topology:
+  connections:
+  - from: 上游水库
+    to: 上游闸门
+    type: hydraulic
+    via: 上游节点
+  - from: 上游闸门
+    to: 渠段1
+    type: hydraulic
+    via: 渠段1起点
+  - from: 渠段1
+    to: 渠段2
+    type: hydraulic
+    via: 渠段1终点
+  - from: 渠段2
+    to: 渠段3
+    type: hydraulic
+    via: 渠段2终点
+  - from: 渠段3
+    to: 下游闸门
+    type: hydraulic
+    via: 渠段3终点
+  - from: 下游闸门
+    to: 下游水库
+    type: hydraulic
+    via: 下游节点
+  nodes:
+  - description: 上游水库连接点
+    elevation: 120.0
+    name: 上游节点
+    type: boundary
+  - description: 上游闸门下游、渠段1起点
+    elevation: 95.0
+    name: 渠段1起点
+    type: junction
+  - description: 渠段1终点、渠段2起点
+    elevation: 94.5
+    name: 渠段1终点
+    type: junction
+  - description: 渠段2终点、渠段3起点
+    elevation: 93.86
+    name: 渠段2终点
+    type: junction
+  - description: 渠段3终点、下游闸门上游
+    elevation: 93.02
+    name: 渠段3终点
+    type: junction
+  - description: 下游水库连接点
+    elevation: 100.0
+    name: 下游节点
+    type: boundary
+validation:
+  accuracy_assessment:
+    benchmark_cases:
+    - steady_flow_tests
+    error_metrics:
+    - MAE
+    - RMSE
+    - MAPE
+    reference_solutions: analytical
+  numerical_checks:
+    convergence_monitoring: true
+    divergence_detection: true
+    oscillation_detection: true
+  physics_checks:
+    energy_conservation:
+      enabled: true
+      tolerance: 0.01
+    mass_conservation:
+      enabled: true
+      tolerance: 0.001
+    momentum_balance:
+      enabled: true
+      tolerance: 0.05
+visualization:
+  monitoring:
+    data_logging:
+      enabled: true
+      include_derived_quantities: true
+      log_interval: 10.0
+      output_format: csv
+    display_panels:
+    - water_levels
+    - flow_rates
+    - gate_openings
+    - system_overview
+    update_frequency: 1.0
+  topology_display:
+    fonts:
+      chinese_font_color: black
+      chinese_font_size: 36
+      legend_font_size: 24
+      number_font_color: red
+      number_font_size: 20
+    layout:
+      avoid_overlap: true
+      edge_label_offset: 0.3
+      node_label_offset: 0.8
+      text_background: true
+    show_component_details: true
+    show_flow_directions: true
+    show_water_levels: true
+    style: engineering
+    symbols:
+      border_width: 3.0
+      color_intensity: high
