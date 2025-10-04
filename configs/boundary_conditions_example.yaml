@@ -1,0 +1,138 @@
+# WaterNet边界条件和控制信号配置示例
+
+metadata:
+  version: "1.0"
+  description: "复杂水力网络边界条件配置示例"
+  author: "WaterNet开发团队"
+  created_at: "2024-10-04T12:00:00"
+
+# 边界条件配置
+boundary_conditions:
+  # 上游流量边界 - 时变入流
+  - name: "上游入流边界"
+    type: "flow_boundary"
+    description: "主要入流边界，模拟降雨径流过程"
+    enabled: true
+    node_name: "上游节点"
+    flow_function:
+      type: "time_series"
+      times: [0, 1800, 3600, 5400, 7200, 9000, 10800]
+      values: [20.0, 35.0, 50.0, 45.0, 30.0, 25.0, 20.0]
+      interpolation: "linear"
+
+  # 侧向入流 - 周期性变化
+  - name: "侧向入流"
+    type: "flow_boundary"
+    description: "侧向支流入流，具有日周期变化"
+    enabled: true
+    node_name: "侧向节点"
+    flow_function:
+      type: "periodic"
+      amplitude: 5.0
+      period: 86400.0  # 24小时周期
+      phase: 0.0
+      offset: 15.0
+
+  # 下游水位边界 - 阶跃变化
+  - name: "下游水位控制"
+    type: "stage_boundary"
+    description: "下游水位边界，模拟潮汐影响"
+    enabled: true
+    node_name: "下游节点"
+    stage_function:
+      type: "step"
+      step_time: 3600.0
+      value_before: 99.5
+      value_after: 100.2
+
+  # 堰流关系边界
+  - name: "调节堰关系"
+    type: "rating_curve_boundary"
+    description: "调节堰的水位流量关系"
+    enabled: true
+    flow_node: "堰流出口"
+    stage_node: "堰上水位"
+    curve_type: "weir"
+    curve_params:
+      discharge_coefficient: 2.2
+      reference_level: 99.0
+      exponent: 1.5
+
+  # 多项式曲线关系
+  - name: "复杂出口关系"
+    type: "rating_curve_boundary"
+    description: "复杂出口的多项式水位流量关系"
+    enabled: true
+    flow_node: "复杂出口流量"
+    stage_node: "复杂出口水位"
+    curve_type: "polynomial"
+    curve_params:
+      coefficients: [0.0, 1.5, 0.02, -0.001]  # Q = 1.5*H + 0.02*H² - 0.001*H³
+
+# 控制信号配置
+control_signals:
+  # 控制设备定义
+  devices:
+    - device_id: "主调节闸门"
+      device_type: "gate"
+      min_value: 0.0
+      max_value: 1.0
+      default_value: 0.6
+      description: "主河道调节闸门"
+
+    - device_id: "排涝泵站"
+      device_type: "pump"
+      min_value: 0.0
+      max_value: 1.0
+      default_value: 0.0
+      description: "应急排涝泵站"
+
+    - device_id: "分流阀门"
+      device_type: "valve"
+      min_value: 0.0
+      max_value: 1.0
+      default_value: 0.8
+      description: "支流分流控制阀"
+
+    - device_id: "调蓄闸门"
+      device_type: "gate"
+      min_value: 0.0
+      max_value: 1.0
+      default_value: 0.4
+      description: "调蓄池进水闸门"
+
+  # 控制调度表
+  schedule:
+    type: "step_schedule"
+    description: "应急调度方案"
+    devices: ["主调节闸门", "排涝泵站", "分流阀门", "调蓄闸门"]
+    step_times: [0, 1800, 3600, 5400, 7200]
+    step_values:
+      - {"主调节闸门": 0.6, "排涝泵站": 0.0, "分流阀门": 0.8, "调蓄闸门": 0.4}
+      - {"主调节闸门": 0.4, "排涝泵站": 0.3, "分流阀门": 0.6, "调蓄闸门": 0.6}
+      - {"主调节闸门": 0.2, "排涝泵站": 0.8, "分流阀门": 0.4, "调蓄闸门": 0.8}
+      - {"主调节闸门": 0.3, "排涝泵站": 0.6, "分流阀门": 0.5, "调蓄闸门": 0.6}
+      - {"主调节闸门": 0.5, "排涝泵站": 0.2, "分流阀门": 0.7, "调蓄闸门": 0.4}
+    interpolation: "linear"
+
+# 求解器配置（可选）
+solver_config:
+  max_iterations: 50
+  tolerance: 1.0e-6
+  relaxation_factor: 0.9
+  enable_sparse_matrix: true
+  enable_adaptive_timestep: true
+  adaptive_strategy: "balanced"
+  initial_dt: 30.0
+  min_dt: 1.0
+  max_dt: 300.0
+
+# 输出配置（可选）
+output_config:
+  save_results: true
+  output_format: ["csv", "json"]
+  save_interval: 300.0  # 每5分钟保存一次
+  output_variables:
+    - "H_*"  # 所有水位变量
+    - "Q_*"  # 所有流量变量
+    - "control_*"  # 所有控制信号
