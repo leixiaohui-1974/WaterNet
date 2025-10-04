@@ -1,0 +1,229 @@
+# 复杂水力枢纽网络配置文件
+# 此配置演示了一个包含多级水库、枢纽站、连接点和管道的完整水力网络
+
+system:
+  name: "梯级水库复杂枢纽系统"
+  description: "包含上下游水库、主枢纽站、分流系统和输水管道的综合水力网络"
+  version: "1.0"
+
+# 水库配置
+reservoirs:
+  - name: "上游水库"
+    type: "reservoir"
+    initial_level: 110.0
+    surface_area: 2500000.0  # 250万平方米
+    bottom_level: 100.0
+    min_level: 105.0
+    max_level: 115.0
+    nodes: ["上游水库_出口"]
+    
+  - name: "调节水库" 
+    type: "reservoir"
+    initial_level: 95.0
+    surface_area: 1800000.0  # 180万平方米
+    bottom_level: 85.0
+    min_level: 90.0
+    max_level: 100.0
+    nodes: ["调节水库_入口", "调节水库_出口"]
+
+# 枢纽站配置
+stations:
+  - name: "主控制枢纽"
+    type: "station"
+    station_type: "gate_station"
+    upstream_node: "上游水库_出口"
+    downstream_node: "主枢纽_下游"
+    gates:
+      - name: "主闸门1"
+        width: 12.0
+        discharge_coeff: 0.75
+        initial_opening: 3.0
+      - name: "主闸门2"
+        width: 12.0
+        discharge_coeff: 0.75
+        initial_opening: 2.5
+      - name: "冲沙闸"
+        width: 8.0
+        discharge_coeff: 0.8
+        initial_opening: 0.0
+    initial_settings:
+      主闸门1: 3.0
+      主闸门2: 2.5
+      冲沙闸: 0.0
+      
+  - name: "分水枢纽"
+    type: "station"
+    station_type: "complex"
+    upstream_node: "输水主管_末端"
+    downstream_node: "分水_下游"
+    structures:
+      gates:
+        - name: "分水闸门"
+          width: 10.0
+          discharge_coeff: 0.7
+          initial_opening: 2.0
+      pumps:
+        - name: "提升泵站"
+          curve_coeffs: [45.0, -0.008, 0.0001]  # H = 45 - 0.008*Q + 0.0001*Q²
+          initial_speed: 0.8
+
+# 连接点配置
+junctions:
+  - name: "主分流点"
+    type: "junction"
+    junction_type: "splitter"
+    connected_objects: ["主控制枢纽", "输水主管", "泄洪渠"]
+    inlet_object: "主控制枢纽"
+    split_ratios:
+      输水主管: 0.7
+      泄洪渠: 0.3
+    elevation: 98.0
+    loss_coefficients:
+      输水主管: 0.2
+      泄洪渠: 0.1
+      
+  - name: "汇流点"
+    type: "junction"
+    junction_type: "general"
+    connected_objects: ["分水枢纽", "支流管道", "调节水库"]
+    elevation: 88.0
+    flow_directions:
+      分水枢纽: "in"
+      支流管道: "in"
+      调节水库: "out"
+
+# 管道配置
+pipes:
+  - name: "输水主管"
+    type: "pipe"
+    upstream_node: "主分流点"
+    downstream_node: "输水主管_末端"
+    length: 3500.0
+    diameter: 2.5
+    roughness: 0.0001
+    elevation_change: -5.0  # 下降5米
+    fittings:
+      - type: "elbow_90"
+        loss_coeff: 0.9
+        count: 3
+      - type: "gate_valve_open"
+        loss_coeff: 0.2
+        count: 2
+        
+  - name: "泄洪渠"
+    type: "pipe"
+    upstream_node: "主分流点"
+    downstream_node: "泄洪渠_出口"
+    length: 1200.0
+    diameter: 3.0
+    roughness: 0.0002
+    elevation_change: -8.0  # 下降8米
+    minor_loss_coeff: 0.5
+    
+  - name: "支流管道"
+    type: "pipe"
+    upstream_node: "支流入口"
+    downstream_node: "汇流点"
+    length: 800.0
+    diameter: 1.5
+    roughness: 0.00015
+    elevation_change: -2.0
+    
+  - name: "连接管道"
+    type: "pipe"
+    upstream_node: "汇流点"
+    downstream_node: "调节水库_入口"
+    length: 500.0
+    diameter: 2.0
+    roughness: 0.0001
+    elevation_change: 0.0
+
+# 初始条件
+initial_conditions:
+  # 水位
+  H_上游水库: 110.0
+  H_调节水库: 95.0
+  H_主分流点: 105.0
+  H_汇流点: 88.0
+  H_输水主管_末端: 92.0
+  H_泄洪渠_出口: 97.0
+  H_支流入口: 90.0
+  
+  # 流量
+  Q_主闸门1: 25.0
+  Q_主闸门2: 20.0
+  Q_冲沙闸: 0.0
+  Q_输水主管: 30.0
+  Q_泄洪渠: 15.0
+  Q_支流管道: 5.0
+  Q_连接管道: 35.0
+  Q_分水闸门: 30.0
+  Q_提升泵站: 0.0
+  
+  # 边界流量
+  Q_in_上游水库: 50.0
+  Q_out_调节水库: 35.0
+
+# 仿真设置
+simulation_settings:
+  solver:
+    type: "implicit"
+    max_iterations: 50
+    tolerance: 1e-6
+    relaxation_factor: 0.8
+    enable_diagnostics: true
+    
+  time_stepping:
+    start_time: 0.0
+    end_time: 3600.0  # 1小时
+    time_step: 60.0   # 1分钟步长
+    
+  output:
+    save_results: true
+    output_interval: 300.0  # 5分钟输出一次
+    output_variables:
+      - "H_上游水库"
+      - "H_调节水库"
+      - "Q_输水主管"
+      - "Q_泄洪渠"
+      - "V_上游水库"
+      - "V_调节水库"
+      
+  boundary_conditions:
+    time_series:
+      Q_in_上游水库:
+        type: "constant"
+        value: 50.0
+      Q_out_调节水库:
+        type: "step"
+        initial_value: 35.0
+        step_time: 1800.0  # 30分钟后变化
+        final_value: 40.0
+        
+  control_strategy:
+    主闸门1:
+      type: "water_level_control"
+      target_level: 110.0
+      control_gain: 0.1
+      min_opening: 1.0
+      max_opening: 5.0
+    
+    提升泵站:
+      type: "flow_control"
+      target_flow: 10.0
+      enable_time: 900.0  # 15分钟后启动
+      
+  monitoring:
+    critical_levels:
+      上游水库:
+        min_level: 105.0
+        max_level: 115.0
+      调节水库:
+        min_level: 90.0
+        max_level: 100.0
+        
+    flow_limits:
+      输水主管:
+        max_flow: 80.0
+      泄洪渠:
+        max_flow: 100.0

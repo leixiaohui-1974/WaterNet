@@ -1,0 +1,236 @@
+# 复杂水力枢纽系统拓扑配置
+# 这是基于您现有系统的配置示例
+
+title: "复杂水力枢纽系统拓扑图"
+description: "包含水库、枢纽站、分流点和管道的完整水力系统"
+
+# 系统节点定义
+nodes:
+  - id: "upstream_reservoir"
+    name: "上游水库"
+    type: "reservoir"
+    position: [0, 2]
+    properties:
+      water_level: 110.0
+      capacity: 5000000
+      area: 1000000
+      elevation: 110.0
+    metadata:
+      description: "主要水源"
+      icon: "🏞️"
+      color: "#4A90E2"
+
+  - id: "main_station"
+    name: "主控闸站"
+    type: "station"
+    position: [2, 2]
+    properties:
+      gate_count: 1
+      max_flow: 500.0
+      gate_opening: 0.24
+      flow_rate: 20.3
+    metadata:
+      description: "主控制枢纽"
+      icon: "🏗️"
+      color: "#F5A623"
+
+  - id: "junction_point"
+    name: "分流枢纽"
+    type: "junction"
+    position: [4, 2]
+    properties:
+      water_level: 107.0
+      junction_type: "split"
+      inlet_count: 1
+      outlet_count: 2
+    metadata:
+      description: "流量分配点"
+      icon: "🔀"
+      color: "#BD10E0"
+
+  - id: "main_conveyance"
+    name: "输水干管"
+    type: "pipe"
+    position: [6, 3]
+    properties:
+      length: 3000
+      diameter: 2.2
+      flow_rate: 7.6
+      velocity: 2.0
+      material: "steel"
+    metadata:
+      description: "主输水管道"
+      icon: "🚰"
+      color: "#50E3C2"
+
+  - id: "spillway_channel"
+    name: "泄洪渠道"
+    type: "pipe"
+    position: [6, 1]
+    properties:
+      length: 1200
+      diameter: 3.0
+      flow_rate: 12.7
+      velocity: 1.8
+      material: "concrete"
+    metadata:
+      description: "泄洪通道"
+      icon: "🌊"
+      color: "#D0021B"
+
+  - id: "downstream_reservoir"
+    name: "下游调节池"
+    type: "reservoir"
+    position: [8, 2]
+    properties:
+      water_level: 92.0
+      capacity: 2000000
+      area: 500000
+      elevation: 92.0
+    metadata:
+      description: "下游蓄水池"
+      icon: "🏞️"
+      color: "#4A90E2"
+
+# 连接关系定义
+edges:
+  - id: "inflow_pipe"
+    name: "进水管道"
+    source: "upstream_reservoir"
+    target: "main_station"
+    type: "flow"
+    properties:
+      flow_rate: 20.3
+      direction: "forward"
+      pipe_type: "inlet"
+    metadata:
+      description: "从水库到主控站"
+      style: "solid"
+      color: "#333333"
+
+  - id: "main_control_pipe"
+    name: "主控管道"
+    source: "main_station"
+    target: "junction_point"
+    type: "flow"
+    properties:
+      flow_rate: 20.3
+      direction: "forward"
+      pipe_type: "main"
+    metadata:
+      description: "主控站到分流点"
+      style: "solid"
+      color: "#333333"
+
+  - id: "conveyance_pipe"
+    name: "输水管道"
+    source: "junction_point"
+    target: "main_conveyance"
+    type: "flow"
+    properties:
+      flow_rate: 7.6
+      direction: "forward"
+      pipe_type: "branch"
+    metadata:
+      description: "分流到输水干管"
+      style: "solid"
+      color: "#50E3C2"
+
+  - id: "spillway_pipe"
+    name: "泄洪管道"
+    source: "junction_point"
+    target: "spillway_channel"
+    type: "flow"
+    properties:
+      flow_rate: 12.7
+      direction: "forward"
+      pipe_type: "branch"
+    metadata:
+      description: "分流到泄洪渠"
+      style: "solid"
+      color: "#D0021B"
+
+  - id: "outflow_main"
+    name: "主出水管"
+    source: "main_conveyance"
+    target: "downstream_reservoir"
+    type: "flow"
+    properties:
+      flow_rate: 7.6
+      direction: "forward"
+      pipe_type: "outlet"
+    metadata:
+      description: "输水干管到下游"
+      style: "solid"
+      color: "#333333"
+
+  - id: "spillway_outflow"
+    name: "泄洪出口"
+    source: "spillway_channel"
+    target: "downstream_reservoir"
+    type: "flow"
+    properties:
+      flow_rate: 12.7
+      direction: "forward"
+      pipe_type: "outlet"
+    metadata:
+      description: "泄洪渠到下游"
+      style: "dashed"
+      color: "#D0021B"
+
+# 布局配置
+layout:
+  algorithm: "manual"  # 手动布局
+  grid_size: [10, 5]
+  spacing: [2, 1]
+  auto_route: true
+  
+  # 文本ASCII布局特定配置
+  text_layout:
+    width: 80
+    height: 20
+    node_width: 12
+    connector_style: "arrows"
+    show_flow_direction: true
+
+# 渲染配置
+render:
+  # 通用配置
+  show_labels: true
+  show_flow_rates: true
+  show_properties: true
+  
+  # 文本渲染配置
+  text_ascii:
+    style: "box_drawing"  # 或 "ascii_art"
+    encoding: "utf-8"
+    show_icons: true
+    show_values: true
+    flow_arrows: true
+    
+  # 图形渲染配置
+  matplotlib:
+    figure_size: [12, 8]
+    dpi: 300
+    font_size: 10
+    node_size: 1000
+    edge_width: 2
+    
+  # 表格渲染配置
+  table:
+    format: "rich"  # 或 "plain"
+    show_summary: true
+    group_by_type: true
+
+# 元数据
+metadata:
+  version: "1.0"
+  created_by: "Qoder AI Assistant"
+  created_date: "2025-10-04"
+  system_type: "hydraulic_network"
+  units:
+    flow_rate: "m³/s"
+    water_level: "m"
+    length: "m"
+    diameter: "m"
+    velocity: "m/s"

@@ -60,6 +60,50 @@ from .flow_stage_interval_optimizer import (
     OptimizerConfig
 )
 
+# 复杂水力枢纽模型系统
+from .reservoir_model import (
+    ReservoirModel,
+    create_simple_reservoir,
+    create_polynomial_reservoir
+)
+
+from .junction_model import (
+    JunctionModel,
+    FlowSplitterJunction,
+    create_simple_junction,
+    create_confluence_junction,
+    create_bifurcation_junction
+)
+
+from .complex_station_model import (
+    ComplexStationModel,
+    create_gate_station,
+    create_pump_station
+)
+
+from .pressurized_pipe_model import (
+    PressurizedPipeModel,
+    create_simple_pipe,
+    create_pipe_with_fittings,
+    FITTING_LOSS_COEFFICIENTS
+)
+
+from .network_builder import (
+    NetworkBuilder,
+    NetworkConfig,
+    TopologyValidator,
+    build_network_from_file,
+    create_simple_cascade_system
+)
+
+from .implicit_solver import (
+    ImplicitSolverAgent,
+    SolverConfig,
+    SolverStatistics,
+    solve_hydraulic_network,
+    solve_hydraulic_transient
+)
+
 # 集成接口
 from .integration_interface import (
     FlowStageSystemIntegrator,
@@ -105,6 +149,33 @@ __all__ = [
     'TransitionConfig',
     'FlowStageIntervalOptimizer',
     'OptimizerConfig',
+    
+    # 复杂水力枢纽模型系统
+    'ReservoirModel',
+    'create_simple_reservoir', 
+    'create_polynomial_reservoir',
+    'JunctionModel',
+    'FlowSplitterJunction',
+    'create_simple_junction',
+    'create_confluence_junction',
+    'create_bifurcation_junction',
+    'ComplexStationModel',
+    'create_gate_station',
+    'create_pump_station',
+    'PressurizedPipeModel',
+    'create_simple_pipe',
+    'create_pipe_with_fittings',
+    'FITTING_LOSS_COEFFICIENTS',
+    'NetworkBuilder',
+    'NetworkConfig',
+    'TopologyValidator',
+    'build_network_from_file',
+    'create_simple_cascade_system',
+    'ImplicitSolverAgent',
+    'SolverConfig',
+    'SolverStatistics',
+    'solve_hydraulic_network',
+    'solve_hydraulic_transient',
     
     # 集成接口
     'FlowStageSystemIntegrator',

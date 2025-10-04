@@ -1,6 +1,17 @@
-﻿"""Physical objects package for WaterNet."""
+"""Physical objects package for WaterNet."""
 
-from .integral_delay_canal import IntegralDelayCanal
-from .reservoir import Reservoir
+from .control_structure import (
+    ControlStructure,
+    GateModel,
+    PumpModel,
+    ValveModel,
+    TurbineModel
+)
 
-__all__ = ["Reservoir", "IntegralDelayCanal"]
+__all__ = [
+    "ControlStructure",
+    "GateModel",
+    "PumpModel",
+    "ValveModel",
+    "TurbineModel"
+]
