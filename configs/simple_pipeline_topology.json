@@ -1,0 +1,164 @@
+{
+  "title": "简单管道系统拓扑图",
+  "description": "演示用的简单管道连接系统",
+  
+  "nodes": [
+    {
+      "id": "source_tank",
+      "name": "源水箱",
+      "type": "reservoir",
+      "position": [0, 1],
+      "properties": {
+        "capacity": 1000,
+        "water_level": 50.0,
+        "material": "concrete"
+      },
+      "metadata": {
+        "description": "系统水源",
+        "icon": "📦",
+        "color": "#4A90E2"
+      }
+    },
+    {
+      "id": "pump_station",
+      "name": "加压泵站",
+      "type": "pump",
+      "position": [2, 1],
+      "properties": {
+        "power": 100,
+        "efficiency": 0.85,
+        "head": 30.0,
+        "flow_rate": 50.0
+      },
+      "metadata": {
+        "description": "增压设备",
+        "icon": "⚡",
+        "color": "#F5A623"
+      }
+    },
+    {
+      "id": "valve_control",
+      "name": "控制阀门",
+      "type": "valve",
+      "position": [4, 1],
+      "properties": {
+        "opening_percent": 75.0,
+        "cv_value": 150,
+        "pressure_drop": 5.0
+      },
+      "metadata": {
+        "description": "流量控制",
+        "icon": "🚰",
+        "color": "#BD10E0"
+      }
+    },
+    {
+      "id": "destination_tank",
+      "name": "目标水箱",
+      "type": "reservoir",
+      "position": [6, 1],
+      "properties": {
+        "capacity": 800,
+        "water_level": 45.0,
+        "material": "steel"
+      },
+      "metadata": {
+        "description": "最终储存",
+        "icon": "📦",
+        "color": "#50E3C2"
+      }
+    }
+  ],
+  
+  "edges": [
+    {
+      "id": "pipe1",
+      "name": "吸入管",
+      "source": "source_tank",
+      "target": "pump_station",
+      "type": "flow",
+      "properties": {
+        "diameter": 0.3,
+        "length": 10,
+        "flow_rate": 50.0,
+        "material": "steel"
+      },
+      "metadata": {
+        "description": "泵吸入段",
+        "style": "solid",
+        "color": "#333333"
+      }
+    },
+    {
+      "id": "pipe2",
+      "name": "压送管",
+      "source": "pump_station",
+      "target": "valve_control",
+      "type": "flow",
+      "properties": {
+        "diameter": 0.25,
+        "length": 50,
+        "flow_rate": 50.0,
+        "material": "steel"
+      },
+      "metadata": {
+        "description": "高压段",
+        "style": "solid",
+        "color": "#F5A623"
+      }
+    },
+    {
+      "id": "pipe3",
+      "name": "输送管",
+      "source": "valve_control",
+      "target": "destination_tank",
+      "type": "flow",
+      "properties": {
+        "diameter": 0.2,
+        "length": 30,
+        "flow_rate": 37.5,
+        "material": "PVC"
+      },
+      "metadata": {
+        "description": "最终段",
+        "style": "solid",
+        "color": "#50E3C2"
+      }
+    }
+  ],
+  
+  "layout": {
+    "algorithm": "linear",
+    "spacing": [2, 0],
+    "text_layout": {
+      "width": 60,
+      "height": 10,
+      "connector_style": "simple"
+    }
+  },
+  
+  "render": {
+    "show_labels": true,
+    "show_flow_rates": true,
+    "text_ascii": {
+      "style": "simple",
+      "show_icons": true,
+      "flow_arrows": true
+    },
+    "matplotlib": {
+      "figure_size": [10, 4],
+      "node_size": 800
+    }
+  },
+  
+  "metadata": {
+    "version": "1.0",
+    "system_type": "simple_pipeline",
+    "units": {
+      "flow_rate": "L/min",
+      "pressure": "bar",
+      "diameter": "m",
+      "length": "m"
+    }
+  }
+}

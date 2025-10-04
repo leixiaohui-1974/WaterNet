@@ -230,7 +230,123 @@ flowchart TD
 | H_downstream | 下游测压管水头 | m |
 | Q_seg_0 | 分段流量 | m³/s |
 
-### 3.3 PipeParameterEstimator（参数辨识器）
+### 3.4 PipeParameterEstimator（管道参数估计器）
+
+#### 3.4.1 集成现有ParameterEstimator框架
+
+完全继承`waternet.parameter_estimation.estimator.ParameterEstimator`的成熟架构，针对有压管道系统进行专门扩展。
+
+**继承的核心能力**：
+- `identify_dynamic_parameters()`: 动态参数辨识核心算法
+- `_optimize_parameters()`: 基于差分进化的参数优化
+- 完善的误差处理和收敛性检查
+- 丰富的优化历史和诊断信息
+
+#### 3.4.2 水锤特性参数辨识
+
+**波速辨识算法**：
+
+基于互相关分析的波速计算：
+1. 提取上下游压力时间序列
+2. 使用`scipy.signal.correlate`计算互相关函数
+3. 检测峰值对应的时间延迟Δt
+4. 计算波速：`a = L/Δt`
+
+**摩擦系数辨识算法**：
+
+基于稳态流能量方程的反算：
+```
+f = (2g × h_f × D) / (L × V²)
+h_f = H_up - H_down  
+V = Q/A
+```
+
+多工况数据融合策略：
+- 加权平均：根据流量大小设置权重
+- 异常值过滤：自动识别和排除异常数据点
+- 不确定性评估：提供参数的置信区间
+
+#### 3.4.3 降阶模型参数辨识
+
+**传递函数模型参数辨识**：
+
+基于频域响应数据的参数估计：
+1. **频率响应识别**：从时域数据计算频率响应
+2. **最小二乘拟合**：对传递函数参数进行优化
+3. **稳定性验证**：检查辨识结果的稳定性
+
+**马斯京干模型参数辨识**：
+
+基于物理约束的参数优化：
+```python
+# 参数约束条件
+bounds = {
+    'K': (L/(2*a), L/a),      # 传播时间约束
+    'x': (0.0, 0.5),          # 权重系数约束
+}
+```
+
+#### 3.4.4 多目标优化策略
+
+**优化目标函数**：
+
+综合考虑多个性能指标：
+```python
+def objective_function(params):
+    rmse_pressure = calculate_rmse(H_pred, H_true)
+    rmse_flow = calculate_rmse(Q_pred, Q_true)
+    stability_penalty = check_stability(params)
+    
+    return w1*rmse_pressure + w2*rmse_flow + w3*stability_penalty
+```
+
+**优化算法选择**：
+
+基于问题特点选择适合的优化算法：
+
+| 问题类型 | 推荐算法 | 适用原因 |
+|---------|---------|----------|
+| 少参数问题 | 黑盒优化 | 梯度信息不可用 |
+| 多参数问题 | 差分进化 | 全局搜索能力强 |
+| 实时优化 | 梯度下降 | 计算效率高 |
+| 约束优化 | 内点法 | 严格满足约束 |
+
+#### 3.4.5 参数不确定性量化
+
+**置信区间计算**：
+
+基于床斯统计的不确定性量化：
+```python
+def calculate_confidence_interval(params, hessian_matrix, confidence_level=0.95):
+    """计算参数的置信区间"""
+    covariance = np.linalg.inv(hessian_matrix)
+    std_errors = np.sqrt(np.diag(covariance))
+    
+    t_value = stats.t.ppf((1 + confidence_level) / 2, df=n_data - n_params)
+    margin_error = t_value * std_errors
+    
+    return params - margin_error, params + margin_error
+```
+
+**敏感性分析**：
+
+评估参数变化对模型输出的影响：
+```python
+def sensitivity_analysis(base_params, param_variations):
+    """参数敏感性分析"""
+    sensitivities = {}
+    base_output = model.simulate(base_params)
+    
+    for param, variation in param_variations.items():
+        perturbed_params = base_params.copy()
+        perturbed_params[param] *= (1 + variation)
+        perturbed_output = model.simulate(perturbed_params)
+        
+        sensitivity = (perturbed_output - base_output) / (base_output * variation)
+        sensitivities[param] = np.mean(np.abs(sensitivity))
+    
+    return sensitivities
+```
 
 #### 3.3.1 摩擦系数辨识
 
@@ -282,9 +398,12 @@ flowchart LR
 利用最新的Q-H耦合蓄水量理论，支持更精确的物理关系：
 ```python
 # 传统方法：V = f(H)
-# 改进方法：V = f(Q, H)
+# 改进方法：V = f(Q, H) - 考虑流量对蓄量关系的影响
+# 大流量时水面线较陡，相同水位下蓄水量减小
 QH_to_V_func = lambda Q, H: V_base(H) * (1 + alpha * (Q-Q0)/Q0)
 ```
+
+这种模式能更真实地反映非恒定流条件下的物理过程，提升了有压管道系统在瞬变工况下的建模精度。
 
 #### 3.2.2 传递函数水锤模型（TransferFunctionHammerModel）
 
@@ -391,7 +510,118 @@ class PressurizedPipeROM(BaseLumpedModel):
         pass
 ```
 
-### 3.6 精细化与降阶模型同步孪生
+### 3.3 PressurizedPipeTwinHarness（有压管道孪生协调器）
+
+#### 3.3.1 基于SynchronizedTwinningHarness的扩展
+
+完全继承现有`SynchronizedTwinningHarness`的成熟架构，针对有压管道系统进行专门优化。
+
+**继承的核心功能**：
+- `run_synchronized_simulation()`: 同步仿真执行流程，支持完整的时间序列仿真
+- `_synchronized_step()`: 单步同步计算核心，并行驱动双模型计算
+- `_should_perform_correction()`: 智能校正触发机制，基于近期误差队列的动态感知
+- `_perform_online_correction()`: 在线参数优化，利用ParameterEstimator进行自适应校正
+- `get_performance_summary()`: 综合性能评估，提供RMSE、相关系数等多维度指标
+- `_recent_errors`队列管理: 维护固定长度的近期误差窗口（默认20步）
+- `correction_history`记录: 存储每次校正的详细信息和性能变化
+
+**有压管道专用优化**：
+- 参数校正适配水锤模型特性（波速、摩擦系数）
+- 支持压力边界条件的特殊处理
+- 水锤事件的快速检测和响应
+
+#### 3.3.2 双模型协调架构
+
+```mermaid
+classDiagram
+    class PressurizedPipeTwinHarness {
+        +PressurizedPipeModel physical_model
+        +PressurizedPipeROM digital_twin
+        +PipeParameterEstimator estimator
+        +run_synchronized_simulation()
+        +handle_valve_operation()
+        +detect_hammer_events()
+    }
+    
+    class PressurizedPipeModel {
+        +get_equations()
+        +compute_steady_state()
+        +get_variable_names()
+    }
+    
+    class PressurizedPipeROM {
+        +step()
+        +linearize_around_operating_point()
+        +update_parameters()
+    }
+    
+    class PipeParameterEstimator {
+        +identify_wave_speed()
+        +identify_friction_factor()
+        +identify_rom_parameters()
+    }
+    
+    PressurizedPipeTwinHarness --> PressurizedPipeModel
+    PressurizedPipeTwinHarness --> PressurizedPipeROM
+    PressurizedPipeTwinHarness --> PipeParameterEstimator
+```
+
+#### 3.3.3 同步仿真与状态估计
+
+**同步仿真流程**：
+
+```mermaid
+flowchart TD
+    A[初始化双模型] --> B[设置边界条件]
+    B --> C[精细化模型计算]
+    C --> D[提取稀疏观测数据]
+    D --> E[降阶模型实时估计]
+    E --> F[计算估计误差指标]
+    F --> G{检测水锤事件?}
+    G -->|是| H[强化校正模式]
+    G -->|否| I{误差超阈值?}
+    I -->|是| J[触发参数校正]
+    I -->|否| K[记录仿真结果]
+    H --> J
+    J --> L[更新模型参数]
+    L --> K
+    K --> M{仿真结束?}
+    M -->|否| B
+    M -->|是| N[性能评估与报告]
+```
+
+#### 3.3.4 在线校正算法增强
+
+基于现有框架的参数辨识能力，增加有压管道专用算法：
+
+**参数辆识方法**：
+
+基于现有`ParameterEstimator`框架的`identify_dynamic_parameters()`核心算法：
+
+1. **递推最小二乘法（RLS）**：
+   - 适用于实时摩擦系数辆识
+   - 利用现有框架的数值稳定性保障
+   - 支持遗忘因子自适应调整
+
+2. **扩展卡尔曼滤波（EKF）**：
+   - 同时辆识波速和摩擦系数
+   - 适用于非线性参数估计
+   - 集成不确定性量化机制
+
+3. **差分进化优化**：
+   - 全局搜索能力强，适合多参数问题
+   - 支持约束条件和边界限制
+   - 内置优化历史和诊断信息
+
+**校正触发条件**：
+
+| 条件类型 | 判据 | 有压管道专用阈值 | 实现细节 |
+|---------|------|----------------|-----------|
+| 压力误差 | 近期3步平均误差 > threshold | 0.5 m (水头) | `_recent_errors`队列维护 |
+| 水锤检测 | 压力梯度 > limit | 10 m/s (变化率) | 快速瞬变响应 |
+| 时间间隔 | 固定校正周期 | 10-20步 (保持稳定) | `correction_interval`参数控制 |
+| 参数漂移 | 参数变化率 > rate | 5% (参数变化) | 基于校正历史分析 |
+| 监控窗口 | 滑动窗口大小 | 20步 (默认) | `monitoring_window`参数 |
 
 #### 3.6.1 双模型架构设计
 
@@ -483,23 +713,26 @@ flowchart TD
 
 **校正触发条件**：
 
-| 条件类型 | 判据 | 阈值 |
-|---------|------|------|
-| 误差阈值 | RMSE > threshold | 0.1 m (压力) |
-| 趋势检测 | 连续N步误差增长 | N = 5 |
-| 时间间隔 | 固定校正周期 | 10-20步 |
-| 置信度 | 参数不确定性过大 | 95%置信区间 |
+| 条件类型 | 判据 | 阈值 | 框架实现 |
+|---------|------|------|----------|
+| 误差阈值 | 近期误差平均值 > threshold | 0.1 m (压力) | `_should_perform_correction()` |
+| 趋势检测 | 连续N步误差增长 | N = 3 | `_recent_errors`队列分析 |
+| 时间间隔 | 固定校正周期 | 10-20步 | `correction_interval`控制 |
+| 置信度 | 参数不确定性过大 | 95%置信区间 | 基于差分进化优化结果 |
+| 监控窗口 | 滑动窗口评估 | 20步 (默认) | FIFO队列机制 |
 
 #### 3.6.4 性能评估指标
 
 **实时性能指标**：
 
-| 指标名称 | 计算公式 | 目标值 |
-|---------|----------|--------|
-| 压力RMSE | √(Σ(H_rom-H_sv)²/N) | < 0.5 m |
-| 流量RMSE | √(Σ(Q_rom-Q_sv)²/N) | < 0.1 m³/s |
-| 相关系数 | corr(H_rom, H_sv) | > 0.95 |
-| 计算效率 | t_rom / t_sv | < 0.1 |
+| 指标名称 | 计算公式 | 目标值 | 框架实现 |
+|---------|----------|--------|-----------|
+| 压力RMSE | √(Σ(H_rom-H_sv)²/N) | < 0.5 m | `_compute_overall_metrics()` |
+| 流量RMSE | √(Σ(Q_rom-Q_sv)²/N) | < 0.1 m³/s | 自动计算并记录 |
+| 相关系数 | corr(H_rom, H_sv) | > 0.95 | Pearson相关系数 |
+| 计算效率 | t_rom / t_sv | < 0.1 | 性能监控机制 |
+| 平均相对误差 | mean(|Q_sv-Q_rom|/max(Q_sv,1e-6))*100 | < 10% | 百分比误差 |
+| 最大误差 | max(|Q_sv-Q_rom|) | 监控指标 | 极值跟踪 |
 
 **长期稳定性指标**：
 
@@ -1055,3 +1288,46 @@ identification_results = {
 2. 观察中点水头的估计曲线是否能很好地追踪真实曲线。
 3. 观察参数是否能从一个不准确的初值，逐渐收敛到物理实体设置的真实值。
 4. 评估同步孪生系统的计算效率和精度性能。
+
+### 第七部分：集成与WaterNet框架适配
+
+**任务 PP-10: 整体集成与框架适配**
+
+状态: 待办
+
+提示词:
+
+**任务**: 将所有组件集成到WaterNet框架中，实现统一的配置管理和性能监控。
+
+**设计要求**:
+1. **配置管理集成**:
+   * 基于现有`configs/`目录结构创建`pressurized_pipe_config.yaml`
+   * 集成所有模型组件的配置参数
+   * 支持环境变量和命令行参数覆盖
+
+2. **性能监控集成**:
+   * 基于现有`scripts/monitoring_system.py`扩展有压管道监控
+   * 实现统一的性能指标收集和报告
+   * 集成Web仪表板和实时可视化
+
+3. **统一API接口**:
+   * 在`waternet/__init__.py`中添加有压管道类导入
+   * 提供简化的高层API接口类似`quick_start.py`
+   * 支持与现有明渠模型的无缝集成
+
+**测试任务**:
+1. 创建综合集成测试用例。
+2. 验证与现有框架的兼容性和稳定性。
+3. 性能基准测试和回归测试。
+4. 用户体验和文档完整性验证。
+
+## 总结
+
+本设计文档为WaterNet框架提供了一个完整的有压管道数字孪生系统解决方案。通过充分利用现有框架的成熟组件和先进理论，该设计实现了：
+
+- **技术先进性**: 集成Q-H耦合蓄水量理论、线性化平衡点理论等最新研究成果
+- **架构统一性**: 完全基于WaterNet现有接口和设计模式，确保无缝集成
+- **性能优化**: 继承框架的性能优化和数值稳定性保障
+- **扩展灵活性**: 模块化设计支持未来功能扩展和技术升级
+
+该系统将为水利工程领域的数字化转型提供强有力的技术支撑，促进有压管道系统的智能化管理和优化运行。
