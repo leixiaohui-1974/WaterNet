@@ -1,0 +1,640 @@
+# 水系统可视化配置文件
+# 定义各类水利对象的可视化模板和展示方式
+
+# 可视化总体配置
+visualization:
+  # 全局设置
+  global_settings:
+    # 字体设置（遵循用户偏好规范）
+    fonts:
+      legend_font_size: 24        # 图例字体大小（放大2倍）
+      chinese_font_size: 36       # 汉字字体大小（放大3倍至3像素）
+      number_font_size: 20        # 数字字体大小（翻倍）
+      english_font_size: 16       # 英文字体大小
+      chinese_font_color: "black" # 汉字颜色（黑色）
+      number_font_color: "red"    # 数字颜色（红色突出）
+      english_font_color: "blue"  # 英文颜色
+      font_family: "SimHei, Arial, sans-serif"  # 字体族
+    
+    # 布局设置（避免重叠规范）
+    layout:
+      node_label_offset: 0.8      # 节点标签偏移（节点半径+0.8单位）
+      edge_label_offset: 0.3      # 边标签偏移（垂直线条方向0.3单位）
+      water_level_offset: 0.5     # 水位数字偏移（节点半径+0.5单位）
+      text_background: true       # 文字背景框
+      background_color: "white"   # 背景色
+      background_opacity: 0.8     # 背景透明度
+      text_padding: 2             # 文字内边距
+      avoid_overlap: true         # 避免重叠
+    
+    # 符号设置（图例符号规范）
+    symbols:
+      border_width: 3.0           # 边框线条加粗至3.0
+      color_intensity: "high"     # 颜色强度加深
+      fill_opacity: 0.7           # 填充透明度
+      stroke_opacity: 1.0         # 描边透明度
+    
+    # 网格和坐标
+    grid:
+      enabled: true
+      color: "lightgray"
+      opacity: 0.3
+      major_grid_interval: 100    # 主网格间隔(m)
+      minor_grid_interval: 20     # 次网格间隔(m)
+    
+    # 比例尺
+    scale:
+      enabled: true
+      position: "bottom_right"
+      length: 200                 # 比例尺长度(像素)
+      units: "m"                  # 单位
+
+  # 多重展示方式配置（用户偏好）
+  display_modes:
+    # 简洁流程图模式
+    simplified_flowchart:
+      name: "简洁流程图"
+      description: "抽象化的流程示意图，突出连接关系"
+      suitable_for: ["system_overview", "conceptual_design"]
+      node_style: "simple_box"
+      edge_style: "straight_arrow"
+      show_details: false
+      auto_layout: "hierarchical"
+    
+    # 流向示意图模式  
+    flow_diagram:
+      name: "流向示意图"
+      description: "强调水流方向和流量分布的示意图"
+      suitable_for: ["flow_analysis", "hydraulic_design"]
+      node_style: "hydraulic_symbol"
+      edge_style: "flow_arrow"
+      show_flow_direction: true
+      show_flow_magnitude: true
+      auto_layout: "force_directed"
+    
+    # 表格模式
+    table_mode:
+      name: "表格模式"
+      description: "以表格形式展示对象属性和参数"
+      suitable_for: ["parameter_review", "data_export"]
+      format: "ascii_table"
+      show_hierarchy: true
+      group_by_type: true
+    
+    # 工程图形化模式
+    engineering_graphics:
+      name: "工程图形化"
+      description: "接近工程制图标准的详细图形"
+      suitable_for: ["engineering_design", "technical_documentation"]
+      node_style: "engineering_symbol"
+      edge_style: "engineering_line"
+      show_dimensions: true
+      show_elevations: true
+      auto_layout: "geographic"
+
+  # 智能模式选择规则
+  auto_mode_selection:
+    rules:
+      - condition: "node_count <= 5"
+        recommended_mode: "engineering_graphics"
+      - condition: "5 < node_count <= 15"
+        recommended_mode: "flow_diagram"
+      - condition: "15 < node_count <= 50"
+        recommended_mode: "simplified_flowchart"
+      - condition: "node_count > 50"
+        recommended_mode: "table_mode"
+      - condition: "has_complex_structures"
+        recommended_mode: "engineering_graphics"
+      - condition: "analysis_type == 'flow_analysis'"
+        recommended_mode: "flow_diagram"
+
+# 水系统对象可视化模板
+object_templates:
+  
+  # 河道模板
+  river:
+    name: "河道"
+    category: "natural_waterway"
+    symbol:
+      shape: "curved_line"
+      color: "#4A90E2"           # 蓝色
+      fill_color: "#E3F2FD"     # 浅蓝填充
+      border_width: 3.0
+      line_style: "wavy"        # 波浪线样式
+    
+    display_properties:
+      - name: "河道名称"
+        property: "name"
+        position: "above"
+        font_size: 36            # 汉字放大3倍
+        color: "black"
+      - name: "河长"
+        property: "length"
+        position: "center"
+        font_size: 20            # 数字翻倍
+        color: "red"
+        unit: "km"
+      - name: "平均宽度"
+        property: "avg_width"
+        position: "below"
+        font_size: 20
+        color: "red"
+        unit: "m"
+    
+    detail_view:
+      cross_section: true
+      longitudinal_profile: true
+      flow_capacity_curve: true
+    
+    engineering_symbol: "╦═══╦"  # ASCII工程符号
+    ascii_art: |
+      ~~~~~~~~~~~~~~~~~~~~~~~~
+         河道名称 (长度)
+      ~~~~~~~~~~~~~~~~~~~~~~~~
+
+  # 渠道模板
+  channel:
+    name: "渠道"
+    category: "artificial_waterway" 
+    symbol:
+      shape: "rectangle"
+      color: "#2196F3"           # 深蓝
+      fill_color: "#F3F9FF"     # 极浅蓝
+      border_width: 3.0
+      line_style: "solid"
+    
+    display_properties:
+      - name: "渠道名称"
+        property: "name"
+        position: "above"
+        font_size: 36
+        color: "black"
+      - name: "底宽"
+        property: "bottom_width"
+        position: "center"
+        font_size: 20
+        color: "red"
+        unit: "m"
+      - name: "边坡"
+        property: "side_slope"
+        position: "below"
+        font_size: 20
+        color: "red"
+        format: "1:{value}"
+    
+    detail_view:
+      cross_section: true
+      hydraulic_parameters: true
+      roughness_distribution: true
+    
+    engineering_symbol: "┌─────┐"
+    ascii_art: |
+      ┌───────────────────┐
+      │   渠道名称        │
+      │  底宽 x 边坡     │
+      └───────────────────┘
+
+  # 管道模板
+  pipe:
+    name: "管道"
+    category: "pressurized_conduit"
+    symbol:
+      shape: "circle"
+      color: "#9C27B0"           # 紫色
+      fill_color: "#F3E5F5"     # 浅紫填充
+      border_width: 3.0
+      line_style: "solid"
+    
+    display_properties:
+      - name: "管道编号"
+        property: "pipe_id"
+        position: "above"
+        font_size: 36
+        color: "black"
+      - name: "直径"
+        property: "diameter"
+        position: "center"
+        font_size: 20
+        color: "red"
+        unit: "mm"
+      - name: "材质"
+        property: "material"
+        position: "below"
+        font_size: 16
+        color: "blue"
+    
+    detail_view:
+      pressure_rating: true
+      flow_characteristics: true
+      loss_coefficients: true
+    
+    engineering_symbol: "●═══●"
+    ascii_art: |
+         管道编号
+      ●═══════════●
+        DN直径mm
+
+  # 水库/湖泊/调蓄池模板
+  reservoir:
+    name: "水库"
+    category: "storage_facility"
+    symbol:
+      shape: "oval"
+      color: "#00BCD4"           # 青色
+      fill_color: "#E0F7FA"     # 浅青填充
+      border_width: 3.0
+      line_style: "solid"
+    
+    display_properties:
+      - name: "水库名称"
+        property: "name"
+        position: "above"
+        font_size: 36
+        color: "black"
+      - name: "正常蓄水位"
+        property: "normal_level"
+        position: "below_center"  # 水位数字分离显示
+        font_size: 20
+        color: "red"
+        unit: "m"
+        offset: 0.5             # 节点半径+0.5偏移
+      - name: "库容"
+        property: "capacity"
+        position: "below"
+        font_size: 20
+        color: "red"
+        unit: "万m³"
+    
+    detail_view:
+      capacity_curve: true
+      level_area_curve: true
+      flood_control_diagram: true
+    
+    engineering_symbol: "◊"
+    ascii_art: |
+        ╭─────────╮
+       ╱  水库名称  ╲
+      ╱   水位:XXXm  ╲
+     ╱  库容:XXX万m³ ╲
+     ╲               ╱
+      ╲_____________╱
+
+  # 闸门模板
+  gate:
+    name: "闸门"
+    category: "control_structure"
+    symbol:
+      shape: "gate"
+      color: "#FF5722"           # 深橙红
+      fill_color: "#FFF3E0"     # 浅橙填充
+      border_width: 3.0
+      line_style: "solid"
+    
+    display_properties:
+      - name: "闸门名称"
+        property: "name"
+        position: "above"
+        font_size: 36
+        color: "black"
+      - name: "开度"
+        property: "opening"
+        position: "center"
+        font_size: 20
+        color: "red"
+        unit: "m"
+        dynamic: true           # 动态显示
+      - name: "宽度"
+        property: "width"
+        position: "below"
+        font_size: 20
+        color: "red"
+        unit: "m"
+    
+    detail_view:
+      flow_coefficient: true
+      operating_curve: true
+      control_logic: true
+    
+    engineering_symbol: "┣┫"
+    ascii_art: |
+      ┌─ 闸门名称 ─┐
+      ┣━━━━━━━━━━━┫
+      │ 开度:X.Xm  │
+      │ 宽度:XX.Xm │
+      └───────────┘
+
+  # 泵站模板
+  pump:
+    name: "泵站"
+    category: "mechanical_equipment"
+    symbol:
+      shape: "circle_with_arrow"
+      color: "#4CAF50"           # 绿色
+      fill_color: "#E8F5E8"     # 浅绿填充
+      border_width: 3.0
+      line_style: "solid"
+      arrow_direction: "up"     # 向上箭头表示提升
+    
+    display_properties:
+      - name: "泵站名称"
+        property: "name"
+        position: "above"
+        font_size: 36
+        color: "black"
+      - name: "扬程"
+        property: "head"
+        position: "center"
+        font_size: 20
+        color: "red"
+        unit: "m"
+      - name: "流量"
+        property: "flow_rate"
+        position: "below"
+        font_size: 20
+        color: "red"
+        unit: "m³/s"
+        dynamic: true
+    
+    detail_view:
+      pump_curve: true
+      efficiency_curve: true
+      operating_point: true
+    
+    engineering_symbol: "⟲"
+    ascii_art: |
+       泵站名称
+      ┌───↑───┐
+      │   ⟲   │
+      │ H=XXm  │
+      │Q=XXm³/s│
+      └───────┘
+
+  # 阀门模板
+  valve:
+    name: "阀门"
+    category: "control_structure"
+    symbol:
+      shape: "diamond"
+      color: "#FF9800"           # 橙色
+      fill_color: "#FFF8E1"     # 浅橙填充
+      border_width: 3.0
+      line_style: "solid"
+    
+    display_properties:
+      - name: "阀门编号"
+        property: "valve_id"
+        position: "above"
+        font_size: 36
+        color: "black"
+      - name: "开度"
+        property: "opening_percent"
+        position: "center"
+        font_size: 20
+        color: "red"
+        unit: "%"
+        dynamic: true
+      - name: "类型"
+        property: "valve_type"
+        position: "below"
+        font_size: 16
+        color: "blue"
+    
+    detail_view:
+      flow_coefficient: true
+      pressure_loss: true
+      control_characteristics: true
+    
+    engineering_symbol: "◊"
+    ascii_art: |
+      阀门编号
+        ◊
+      XX% 开度
+      (阀门类型)
+
+  # 水轮机模板
+  turbine:
+    name: "水轮机"
+    category: "power_equipment"
+    symbol:
+      shape: "circle_with_blades"
+      color: "#3F51B5"           # 靛蓝
+      fill_color: "#E8EAF6"     # 浅靛蓝填充
+      border_width: 3.0
+      line_style: "solid"
+      blades: 6                 # 叶片数
+    
+    display_properties:
+      - name: "机组名称"
+        property: "unit_name"
+        position: "above"
+        font_size: 36
+        color: "black"
+      - name: "出力"
+        property: "power_output"
+        position: "center"
+        font_size: 20
+        color: "red"
+        unit: "MW"
+        dynamic: true
+      - name: "效率"
+        property: "efficiency"
+        position: "below"
+        font_size: 20
+        color: "red"
+        unit: "%"
+        dynamic: true
+    
+    detail_view:
+      power_curve: true
+      efficiency_curve: true
+      cavitation_characteristics: true
+    
+    engineering_symbol: "⚹"
+    ascii_art: |
+      机组名称
+      ┌─⚹─┐
+      │P=XXMw│
+      │η=XX% │
+      └─────┘
+
+  # 枢纽站模板
+  station:
+    name: "枢纽站"
+    category: "complex_facility"
+    symbol:
+      shape: "complex_structure"
+      color: "#795548"           # 棕色
+      fill_color: "#EFEBE9"     # 浅棕填充
+      border_width: 3.0
+      line_style: "solid"
+      sub_components: true      # 包含子组件
+    
+    display_properties:
+      - name: "枢纽名称"
+        property: "station_name"
+        position: "above"
+        font_size: 36
+        color: "black"
+      - name: "总流量"
+        property: "total_flow"
+        position: "center"
+        font_size: 20
+        color: "red"
+        unit: "m³/s"
+        dynamic: true
+      - name: "设备数量"
+        property: "equipment_count"
+        position: "below"
+        font_size: 20
+        color: "red"
+        unit: "台"
+    
+    detail_view:
+      layout_diagram: true
+      equipment_list: true
+      operation_status: true
+    
+    engineering_symbol: "⧉"
+    ascii_art: |
+      ╔═══════════════╗
+      ║   枢纽名称     ║
+      ║ ┣┫ ⟲ ◊ ⚹    ║
+      ║ 总流量:XXXm³/s ║
+      ║ 设备:XX台     ║
+      ╚═══════════════╝
+
+# 输出格式配置
+output_formats:
+  
+  # ASCII艺术文本输出
+  ascii_art:
+    enabled: true
+    priority: 1                 # 优先使用（项目偏好）
+    encoding: "utf-8"
+    line_width: 80
+    border_style: "box_drawing"
+    alignment: "center"
+    include_legend: true
+    legend_position: "bottom"
+  
+  # 表格输出
+  table:
+    enabled: true
+    priority: 2
+    format: "ascii_table"
+    column_separator: " | "
+    row_separator: "-"
+    header_style: "bold"
+    alignment: "left"
+    max_column_width: 20
+  
+  # 图形输出
+  graphics:
+    enabled: true
+    priority: 3
+    formats: ["png", "svg", "pdf"]
+    resolution: "high"          # 高分辨率
+    dpi: 300
+    background: "white"
+    transparent: false
+  
+  # 交互式输出
+  interactive:
+    enabled: true
+    priority: 4
+    format: "html"
+    include_controls: true
+    animation_support: true
+    zoom_support: true
+    pan_support: true
+
+# 动态数据显示配置
+dynamic_display:
+  
+  # 实时监控
+  real_time:
+    update_interval: 1.0        # 更新间隔(秒)
+    buffer_size: 1000          # 数据缓冲区大小
+    trend_indicators: true      # 趋势指示器
+    alarm_thresholds: true      # 报警阈值
+  
+  # 历史数据回放
+  playback:
+    speed_control: true         # 播放速度控制
+    frame_rate: 10             # 帧率(fps)
+    progress_bar: true         # 进度条
+    time_stamps: true          # 时间戳显示
+  
+  # 数据可视化
+  data_visualization:
+    time_series_plots: true     # 时间序列图
+    scatter_plots: true         # 散点图
+    heat_maps: true            # 热力图
+    flow_field_visualization: true  # 流场可视化
+
+# 输出文件配置
+file_output:
+  
+  # 目录结构
+  directory_structure:
+    base_dir: "output"
+    subdirs:
+      - "topology_diagrams"     # 拓扑图
+      - "monitoring_reports"    # 监控报告
+      - "simulation_results"    # 仿真结果
+      - "validation_data"       # 验证数据
+      - "config_backups"        # 配置备份
+  
+  # 文件命名规则
+  naming_convention:
+    timestamp_format: "%Y%m%d_%H%M%S"
+    prefix_by_type: true
+    include_system_name: true
+    include_config_hash: true   # 包含配置哈希值
+  
+  # 元数据
+  metadata:
+    include_generation_info: true
+    include_system_info: true
+    include_performance_metrics: true
+    format: "yaml"
+
+# 报告模板配置
+report_templates:
+  
+  # 工程报告模板
+  engineering_report:
+    title: "水库-闸门-明渠系统工程报告"
+    sections:
+      - "系统概述"
+      - "拓扑结构"
+      - "关键参数"
+      - "仿真结果"
+      - "性能分析"
+      - "建议措施"
+    format: "markdown"
+    include_diagrams: true
+    diagram_format: "png"
+  
+  # 监控报告模板
+  monitoring_report:
+    title: "实时监控报告"
+    sections:
+      - "系统状态"
+      - "关键指标"
+      - "异常告警"
+      - "趋势分析"
+    update_frequency: "每小时"
+    auto_generate: true
+  
+  # 验证报告模板
+  validation_report:
+    title: "模型验证报告"
+    sections:
+      - "验证方法"
+      - "基准对比"
+      - "精度评估"
+      - "误差分析"
+      - "改进建议"
+    include_statistics: true
+    statistical_tests: ["MAE", "RMSE", "R²"]

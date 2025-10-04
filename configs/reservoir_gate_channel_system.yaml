@@ -1,0 +1,452 @@
+# 水库-闸门-明渠系统配置文件
+# 设计文档中的双水库-明渠-闸门系统完整配置
+
+# 系统基本信息
+system:
+  name: "水库-闸门-明渠系统"
+  description: "双恒水位水库通过明渠连接，中间设置闸门进行流量控制"
+  version: "1.0"
+  author: "WaterNet Development Team"
+  created_date: "2024-10-05"
+
+# 物理组件配置
+components:
+  # 水库配置
+  reservoirs:
+    上游水库:
+      type: "constant_level"
+      level: 120.0  # 恒定水位 (m)
+      capacity: 5000000.0  # 容量 (m³)
+      reservoir_type: "upstream"
+      connected_node: "上游节点"
+      max_adjustment_rate: 10000.0  # 最大边界调节流量 (m³/s)
+      description: "上游恒定水位水库，作为无限水源"
+    
+    下游水库:
+      type: "constant_level"
+      level: 100.0  # 恒定水位 (m)
+      capacity: 3000000.0  # 容量 (m³)
+      reservoir_type: "downstream"
+      connected_node: "下游节点"
+      max_adjustment_rate: 10000.0  # 最大边界调节流量 (m³/s)
+      description: "下游恒定水位水库，作为无限汇点"
+
+  # 闸门配置
+  gates:
+    上游闸门:
+      type: "single_gate"
+      location:
+        upstream_node: "上游节点"
+        downstream_node: "渠段1起点"
+      geometry:
+        width: 10.0  # 闸门宽度 (m)
+        bottom_elevation: 95.0  # 闸底高程 (m)
+      hydraulics:
+        discharge_coefficient: 0.65  # 流量系数
+        submerged_threshold: 0.7  # 淹没出流判别阈值
+        free_flow_formula: "orifice"  # 自由出流公式类型
+        submerged_flow_formula: "submerged_orifice"  # 淹没出流公式类型
+      control:
+        initial_opening: 1.0  # 初始开度 (m)
+        max_opening: 5.0  # 最大开度 (m)
+        min_opening: 0.0  # 最小开度 (m)
+      description: "控制进入明渠的流量"
+    
+    下游闸门:
+      type: "single_gate"
+      location:
+        upstream_node: "渠段3终点"
+        downstream_node: "下游节点"
+      geometry:
+        width: 12.0  # 闸门宽度 (m)
+        bottom_elevation: 85.0  # 闸底高程 (m)
+      hydraulics:
+        discharge_coefficient: 0.65  # 流量系数
+        submerged_threshold: 0.7  # 淹没出流判别阈值
+        free_flow_formula: "orifice"  # 自由出流公式类型
+        submerged_flow_formula: "submerged_orifice"  # 淹没出流公式类型
+      control:
+        initial_opening: 1.5  # 初始开度 (m)
+        max_opening: 5.0  # 最大开度 (m)
+        min_opening: 0.0  # 最小开度 (m)
+      description: "控制流出明渠的流量"
+
+  # 闸站配置（多闸门组合）
+  gate_stations:
+    上游闸站:
+      type: "multi_gate_station"
+      location:
+        upstream_node: "上游节点"
+        downstream_node: "渠段1起点"
+      gates:
+        - name: "1号闸门"
+          width: 8.0
+          discharge_coefficient: 0.65
+          initial_opening: 0.8
+          max_opening: 4.0
+        - name: "2号闸门"
+          width: 10.0
+          discharge_coefficient: 0.7
+          initial_opening: 1.0
+          max_opening: 5.0
+        - name: "3号闸门"
+          width: 8.0
+          discharge_coefficient: 0.65
+          initial_opening: 0.8
+          max_opening: 4.0
+      control_strategy:
+        mode: "coordinated"  # 协调控制模式
+        flow_distribution: [0.3, 0.4, 0.3]  # 流量分配比例
+        priority_sequence: [2, 1, 3]  # 优先启动序列（中门优先）
+      description: "上游三孔闸站"
+
+    下游闸站:
+      type: "multi_gate_station"
+      location:
+        upstream_node: "渠段3终点"
+        downstream_node: "下游节点"
+      gates:
+        - name: "1号闸门"
+          width: 8.0
+          discharge_coefficient: 0.65
+          initial_opening: 1.2
+          max_opening: 4.0
+        - name: "2号闸门"
+          width: 10.0
+          discharge_coefficient: 0.7
+          initial_opening: 1.5
+          max_opening: 5.0
+        - name: "3号闸门"
+          width: 8.0
+          discharge_coefficient: 0.65
+          initial_opening: 1.2
+          max_opening: 4.0
+      control_strategy:
+        mode: "coordinated"  # 协调控制模式
+        flow_distribution: [0.3, 0.4, 0.3]  # 流量分配比例
+        priority_sequence: [2, 1, 3]  # 优先启动序列
+      description: "下游三孔闸站"
+
+  # 明渠配置
+  channels:
+    渠段1:
+      type: "channel_segment"
+      location:
+        upstream_node: "渠段1起点"
+        downstream_node: "渠段1终点"
+      geometry:
+        length: 500.0  # 长度 (m)
+        bottom_width: 10.0  # 底宽 (m)
+        side_slope: 1.5  # 边坡系数 (1:1.5)
+        bottom_elevation_upstream: 95.0  # 上游底高程 (m)
+        bottom_elevation_downstream: 94.5  # 下游底高程 (m)
+        bottom_slope: 0.001  # 底坡 (1.0‰)
+      hydraulics:
+        roughness_coefficient: 0.025  # 曼宁糙率系数
+        minimum_depth: 0.1  # 最小水深 (m)
+      discretization:
+        num_segments: 10  # 计算分段数
+        solver_type: "preissmann"  # 求解器类型
+      description: "进水稳流段"
+
+    渠段2:
+      type: "channel_segment"
+      location:
+        upstream_node: "渠段1终点"
+        downstream_node: "渠段2终点"
+      geometry:
+        length: 800.0  # 长度 (m)
+        bottom_width: 12.0  # 底宽 (m)
+        side_slope: 1.5  # 边坡系数
+        bottom_elevation_upstream: 94.5  # 上游底高程 (m)
+        bottom_elevation_downstream: 93.86  # 下游底高程 (m)
+        bottom_slope: 0.0008  # 底坡 (0.8‰)
+      hydraulics:
+        roughness_coefficient: 0.025  # 曼宁糙率系数
+        minimum_depth: 0.1  # 最小水深 (m)
+      discretization:
+        num_segments: 15  # 计算分段数
+        solver_type: "preissmann"  # 求解器类型
+      description: "主输水段"
+
+    渠段3:
+      type: "channel_segment"
+      location:
+        upstream_node: "渠段2终点"
+        downstream_node: "渠段3终点"
+      geometry:
+        length: 700.0  # 长度 (m)
+        bottom_width: 10.0  # 底宽 (m)
+        side_slope: 1.5  # 边坡系数
+        bottom_elevation_upstream: 93.86  # 上游底高程 (m)
+        bottom_elevation_downstream: 93.02  # 下游底高程 (m)
+        bottom_slope: 0.0012  # 底坡 (1.2‰)
+      hydraulics:
+        roughness_coefficient: 0.025  # 曼宁糙率系数
+        minimum_depth: 0.1  # 最小水深 (m)
+      discretization:
+        num_segments: 12  # 计算分段数
+        solver_type: "preissmann"  # 求解器类型
+      description: "出水段"
+
+# 系统连接拓扑
+topology:
+  nodes:
+    - name: "上游节点"
+      type: "boundary"
+      elevation: 120.0
+      description: "上游水库连接点"
+    
+    - name: "渠段1起点"
+      type: "junction"
+      elevation: 95.0
+      description: "上游闸门下游、渠段1起点"
+    
+    - name: "渠段1终点"
+      type: "junction"  
+      elevation: 94.5
+      description: "渠段1终点、渠段2起点"
+    
+    - name: "渠段2终点"
+      type: "junction"
+      elevation: 93.86
+      description: "渠段2终点、渠段3起点"
+    
+    - name: "渠段3终点"
+      type: "junction"
+      elevation: 93.02
+      description: "渠段3终点、下游闸门上游"
+    
+    - name: "下游节点"
+      type: "boundary"
+      elevation: 100.0
+      description: "下游水库连接点"
+
+  connections:
+    - from: "上游水库"
+      to: "上游闸门"
+      via: "上游节点"
+      type: "hydraulic"
+    
+    - from: "上游闸门"
+      to: "渠段1"
+      via: "渠段1起点"
+      type: "hydraulic"
+    
+    - from: "渠段1"
+      to: "渠段2"
+      via: "渠段1终点"
+      type: "hydraulic"
+    
+    - from: "渠段2"
+      to: "渠段3"
+      via: "渠段2终点"
+      type: "hydraulic"
+    
+    - from: "渠段3"
+      to: "下游闸门"
+      via: "渠段3终点"
+      type: "hydraulic"
+    
+    - from: "下游闸门"
+      to: "下游水库"
+      via: "下游节点"
+      type: "hydraulic"
+
+# 仿真配置
+simulation:
+  # 时间设置
+  time:
+    start_time: 0.0  # 开始时间 (s)
+    end_time: 7200.0  # 结束时间 (s) - 2小时
+    initial_time_step: 10.0  # 初始时间步长 (s)
+    max_time_step: 60.0  # 最大时间步长 (s)
+    min_time_step: 1.0  # 最小时间步长 (s)
+    adaptive_timestep: true  # 是否启用自适应时间步长
+
+  # 求解器设置
+  solver:
+    type: "enhanced"  # 求解器类型：standard, enhanced
+    max_iterations: 20  # 最大迭代次数
+    convergence_tolerance: 1e-6  # 收敛容差
+    relaxation_factor: 0.8  # 松弛因子
+    enable_mass_balance_check: true  # 启用质量守恒检查
+    mass_balance_tolerance: 1e-4  # 质量平衡容差
+
+  # 初始条件
+  initial_conditions:
+    method: "steady_state"  # 初始化方法：steady_state, manual
+    steady_state_tolerance: 1e-4  # 恒定流收敛容差
+    max_steady_iterations: 100  # 恒定流最大迭代次数
+    
+    # 手动初始水位（当method为manual时使用）
+    manual_water_levels:
+      上游节点: 120.0
+      渠段1起点: 105.0
+      渠段1终点: 104.5
+      渠段2终点: 103.8
+      渠段3终点: 102.5
+      下游节点: 100.0
+
+# 测试工况配置
+test_cases:
+  # 恒定流测试
+  steady_flow_tests:
+    基础工况:
+      description: "基础恒定流工况"
+      gate_settings:
+        上游闸门: 1.0
+        下游闸门: 1.5
+      expected_results:
+        flow_rate_range: [15.0, 25.0]  # 预期流量范围 (m³/s)
+        max_velocity: 2.0  # 最大流速 (m/s)
+    
+    大开度工况:
+      description: "大开度恒定流工况"
+      gate_settings:
+        上游闸门: 2.0
+        下游闸门: 2.5
+      expected_results:
+        flow_rate_range: [40.0, 60.0]
+        max_velocity: 3.0
+    
+    小开度工况:
+      description: "小开度恒定流工况"
+      gate_settings:
+        上游闸门: 0.5
+        下游闸门: 0.8
+      expected_results:
+        flow_rate_range: [5.0, 12.0]
+        max_velocity: 1.5
+
+  # 非恒定流测试（阶跃响应）
+  unsteady_flow_tests:
+    单闸门阶跃:
+      description: "上游闸门开度阶跃变化"
+      initial_conditions:
+        上游闸门: 1.0
+        下游闸门: 1.5
+      control_sequence:
+        - time: 600.0  # 10分钟后
+          action: "set_gate_opening"
+          target: "上游闸门"
+          value: 2.0
+      analysis_metrics:
+        - "response_time"      # 响应时间
+        - "overshoot"         # 超调量  
+        - "settling_time"     # 调节时间
+        - "steady_state_error" # 稳态误差
+
+    双闸门协调:
+      description: "双闸门协调控制测试"
+      initial_conditions:
+        上游闸门: 1.0
+        下游闸门: 1.0
+      control_sequence:
+        - time: 300.0
+          action: "set_gate_opening"
+          target: "上游闸门"
+          value: 1.8
+        - time: 900.0
+          action: "set_gate_opening"
+          target: "下游闸门"
+          value: 0.6
+      analysis_metrics:
+        - "system_response"
+        - "flow_distribution"
+        - "water_level_variation"
+
+# 可视化配置
+visualization:
+  # 拓扑图设置
+  topology_display:
+    style: "engineering"  # 显示风格：engineering, schematic, simplified
+    show_water_levels: true  # 显示水位
+    show_flow_directions: true  # 显示流向
+    show_component_details: true  # 显示组件详情
+    
+    # 字体设置（遵循用户偏好）
+    fonts:
+      legend_font_size: 24  # 图例字体大小（放大2倍）
+      chinese_font_size: 36  # 汉字字体大小（放大3倍）
+      number_font_size: 20  # 数字字体大小（翻倍）
+      chinese_font_color: "black"  # 汉字颜色
+      number_font_color: "red"     # 数字颜色
+    
+    # 布局设置（避免重叠）
+    layout:
+      node_label_offset: 0.8  # 节点标签偏移（节点半径+0.8）
+      edge_label_offset: 0.3  # 边标签偏移
+      text_background: true   # 文字背景框
+      avoid_overlap: true     # 避免重叠
+    
+    # 符号设置
+    symbols:
+      border_width: 3.0      # 边框线条宽度
+      color_intensity: "high" # 颜色强度
+
+  # 监控面板设置
+  monitoring:
+    update_frequency: 1.0  # 更新频率 (s)
+    display_panels:
+      - "water_levels"      # 水位面板
+      - "flow_rates"        # 流量面板  
+      - "gate_openings"     # 闸门开度面板
+      - "system_overview"   # 系统总览
+    
+    # 数据记录
+    data_logging:
+      enabled: true
+      log_interval: 10.0  # 记录间隔 (s)
+      output_format: "csv"  # 输出格式
+      include_derived_quantities: true  # 包含衍生量
+
+# 验证配置
+validation:
+  # 物理一致性检查
+  physics_checks:
+    mass_conservation:
+      enabled: true
+      tolerance: 0.001  # 质量守恒误差容差 (%)
+    
+    energy_conservation:
+      enabled: true
+      tolerance: 0.01   # 能量守恒误差容差 (%)
+    
+    momentum_balance:
+      enabled: true
+      tolerance: 0.05   # 动量平衡误差容差
+  
+  # 数值稳定性检查
+  numerical_checks:
+    convergence_monitoring: true
+    oscillation_detection: true
+    divergence_detection: true
+    
+  # 精度评估
+  accuracy_assessment:
+    reference_solutions: "analytical"  # 参考解类型
+    error_metrics: ["MAE", "RMSE", "MAPE"]  # 误差指标
+    benchmark_cases: ["steady_flow_tests"]  # 基准测试用例
+
+# 输出配置
+output:
+  # 结果文件
+  results:
+    directory: "results"
+    formats: ["csv", "json", "hdf5"]
+    include_metadata: true
+    
+  # 报告生成
+  reports:
+    generate_summary: true
+    include_plots: true
+    plot_formats: ["png", "pdf"]
+    template: "engineering_report"
+    
+  # 可视化输出
+  visualization_output:
+    save_topology_diagrams: true
+    save_animation: true
+    animation_fps: 10
+    image_resolution: "high"

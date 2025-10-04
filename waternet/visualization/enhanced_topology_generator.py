@@ -380,3 +380,103 @@ class EnhancedTopologyGenerator:
         plt.close()
         
         return output_path
+    
+    def _create_linear_layout(self, topology_data: Dict) -> Dict:
+        """创建线性布局"""
+        layout = {'positions': {}}
+        
+        # 收集所有节点
+        all_nodes = []
+        for key in ['reservoirs', 'stations', 'junctions', 'pipes', 'gates', 'channels']:
+            if key in topology_data:
+                for item in topology_data[key]:
+                    if isinstance(item, dict):
+                        all_nodes.append((item['name'], key.rstrip('s')))
+                        
+        # 线性排列
+        for i, (name, node_type) in enumerate(all_nodes):
+            layout['positions'][name] = {
+                'x': i * 3.0,
+                'y': 0.0,
+                'type': node_type
+            }
+            
+        return layout
+        
+    def _create_hierarchical_layout(self, topology_data: Dict) -> Dict:
+        """创建分层布局（重用IntuitiveTopologyGenerator的逻辑）"""
+        from .intuitive_topology_generator import IntuitiveTopologyGenerator
+        temp_generator = IntuitiveTopologyGenerator()
+        temp_layout = temp_generator.create_layered_layout(topology_data)
+        
+        # 转换格式
+        layout = {'positions': {}}
+        for comp_name, pos_info in temp_layout['positions'].items():
+            layout['positions'][comp_name] = pos_info
+            
+        return layout
+        
+    def _create_grid_layout(self, topology_data: Dict) -> Dict:
+        """创建网格布局"""
+        layout = {'positions': {}}
+        
+        # 收集所有节点
+        all_nodes = []
+        for key in ['reservoirs', 'stations', 'junctions', 'pipes', 'gates', 'channels']:
+            if key in topology_data:
+                for item in topology_data[key]:
+                    if isinstance(item, dict):
+                        all_nodes.append((item['name'], key.rstrip('s')))
+                        
+        # 网格布局
+        grid_size = int(np.ceil(np.sqrt(len(all_nodes))))
+        for i, (name, node_type) in enumerate(all_nodes):
+            row = i // grid_size
+            col = i % grid_size
+            layout['positions'][name] = {
+                'x': col * 2.5,
+                'y': row * 2.5,
+                'type': node_type
+            }
+            
+        return layout
+        
+    def _create_force_directed_layout(self, topology_data: Dict) -> Dict:
+        """创建力导向布局（简化版）"""
+        layout = {'positions': {}}
+        
+        # 收集所有节点
+        all_nodes = []
+        for key in ['reservoirs', 'stations', 'junctions', 'pipes', 'gates', 'channels']:
+            if key in topology_data:
+                for item in topology_data[key]:
+                    if isinstance(item, dict):
+                        all_nodes.append((item['name'], key.rstrip('s')))
+                        
+        # 随机布局（简化的力导向）
+        import random
+        random.seed(42)
+        for i, (name, node_type) in enumerate(all_nodes):
+            angle = 2 * np.pi * i / len(all_nodes)
+            radius = 3.0
+            layout['positions'][name] = {
+                'x': radius * np.cos(angle),
+                'y': radius * np.sin(angle), 
+                'type': node_type
+            }
+            
+        return layout
+        
+    def _get_node_data(self, comp_name: str, topology_data: Dict) -> dict:
+        """获取节点数据"""
+        for key in ['reservoirs', 'stations', 'junctions', 'pipes', 'gates', 'channels']:
+            if key in topology_data:
+                for item in topology_data[key]:
+                    if isinstance(item, dict) and item.get('name') == comp_name:
+                        return item
+        return {}
+        
+    def _get_edge_data(self, source: str, target: str, topology_data: Dict) -> dict:
+        """获取边数据"""
+        # 简化实现，在实际项目中可以根据需要扩展
+        return {'flow': 0.0}

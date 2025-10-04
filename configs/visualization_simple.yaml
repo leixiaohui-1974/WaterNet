@@ -1,0 +1,149 @@
+# 简化的水系统可视化配置文件
+# 解决YAML解析问题的精简版本
+
+visualization:
+  global_settings:
+    fonts:
+      legend_font_size: 24
+      chinese_font_size: 36
+      number_font_size: 20
+      chinese_font_color: "black"
+      number_font_color: "red"
+    
+    layout:
+      node_label_offset: 0.8
+      edge_label_offset: 0.3
+      water_level_offset: 0.5
+      text_background: true
+      avoid_overlap: true
+    
+    symbols:
+      border_width: 3.0
+      color_intensity: "high"
+
+  display_modes:
+    simplified_flowchart:
+      name: "简洁流程图"
+      description: "抽象化的流程示意图"
+      suitable_for: ["system_overview"]
+    
+    flow_diagram:
+      name: "流向示意图"
+      description: "强调水流方向的示意图"
+      suitable_for: ["flow_analysis"]
+    
+    table_mode:
+      name: "表格模式"
+      description: "表格形式展示参数"
+      suitable_for: ["parameter_review"]
+    
+    engineering_graphics:
+      name: "工程图形化"
+      description: "工程制图标准图形"
+      suitable_for: ["engineering_design"]
+
+  auto_mode_selection:
+    rules:
+      - condition: "node_count <= 5"
+        recommended_mode: "engineering_graphics"
+      - condition: "5 < node_count <= 15"
+        recommended_mode: "flow_diagram"
+      - condition: "node_count > 15"
+        recommended_mode: "table_mode"
+
+object_templates:
+  reservoir:
+    name: "水库"
+    category: "storage_facility"
+    symbol:
+      shape: "oval"
+      color: "#00BCD4"
+      border_width: 3.0
+    display_properties:
+      - name: "水库名称"
+        property: "name"
+        font_size: 36
+        color: "black"
+      - name: "水位"
+        property: "level"
+        font_size: 20
+        color: "red"
+        unit: "m"
+    engineering_symbol: "◊"
+    ascii_art: "水库符号"
+
+  gate:
+    name: "闸门"
+    category: "control_structure"
+    symbol:
+      shape: "gate"
+      color: "#FF5722"
+      border_width: 3.0
+    display_properties:
+      - name: "闸门名称"
+        property: "name"
+        font_size: 36
+        color: "black"
+      - name: "开度"
+        property: "opening"
+        font_size: 20
+        color: "red"
+        unit: "m"
+    engineering_symbol: "┣┫"
+    ascii_art: "闸门符号"
+
+  channel:
+    name: "渠道"
+    category: "artificial_waterway"
+    symbol:
+      shape: "rectangle"
+      color: "#2196F3"
+      border_width: 3.0
+    display_properties:
+      - name: "渠道名称"
+        property: "name"
+        font_size: 36
+        color: "black"
+      - name: "长度"
+        property: "length"
+        font_size: 20
+        color: "red"
+        unit: "m"
+    engineering_symbol: "┌─┐"
+    ascii_art: "渠道符号"
+
+output_formats:
+  ascii_art:
+    enabled: true
+    priority: 1
+    line_width: 80
+    include_legend: true
+  
+  table:
+    enabled: true
+    priority: 2
+    column_separator: " | "
+    max_column_width: 20
+  
+  graphics:
+    enabled: true
+    priority: 3
+    formats: ["png"]
+
+file_output:
+  directory_structure:
+    base_dir: "output"
+    subdirs:
+      - "topology_diagrams"
+      - "monitoring_reports"
+  
+  naming_convention:
+    timestamp_format: "%Y%m%d_%H%M%S"
+
+report_templates:
+  engineering_report:
+    title: "水库-闸门-明渠系统工程报告"
+    sections:
+      - "系统概述"
+      - "拓扑结构"
+      - "详细参数"
