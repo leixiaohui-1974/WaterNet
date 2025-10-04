@@ -1,7 +1,7 @@
 """
 WaterNet Models模块
 
-包含所有水力模型的实现，包括传统模型和新的流量水位区间优化系统。
+包含所有水力模型的实现，包括传统模型、有压管道模型和新的流量水位区间优化系统。
 
 Author: WaterNet Development Team
 Date: 2024-10-04
@@ -14,6 +14,15 @@ from .lumped_models import (
     StorageRoutingModel,
     MuskingumModel,
     IntegralDelayZeroModel
+)
+
+# 有压管道降阶模型
+from .pressurized_pipe_rom import (
+    PressurizedPipeROM,
+    LinearHammerModel,
+    MuskingumHammerModel,
+    ElasticPipeModel,
+    create_pressurized_pipe_rom
 )
 
 from .saint_venant import SaintVenantModel
@@ -77,6 +86,13 @@ __all__ = [
     'MuskingumModel',
     'IntegralDelayZeroModel',
     'SaintVenantModel',
+    
+    # 有压管道降阶模型
+    'PressurizedPipeROM',
+    'LinearHammerModel',
+    'MuskingumHammerModel', 
+    'ElasticPipeModel',
+    'create_pressurized_pipe_rom',
     
     # 简化模式系统
     'SimplifiedSaintVenantModel',
