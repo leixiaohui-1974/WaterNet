@@ -1,0 +1,15 @@
+simulation_type: unsteady
+time_step: 60.0
+total_time: 7200.0  # 2 hours
+output_interval: 60.0
+
+boundary_conditions:
+  upstream_type: flow
+  downstream_type: level
+  upstream_values: [8.0, 10.0, 12.0, 15.0, 18.0, 15.0, 12.0, 10.0, 8.0]
+  downstream_values: 99.4
+
+output:
+  save_results: true
+  output_format: csv
+  plot_results: true

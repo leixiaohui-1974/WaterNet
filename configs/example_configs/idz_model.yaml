@@ -1,0 +1,23 @@
+model_type: idz
+parameters:
+  tau: 1800.0      # 零点时间常数 (s)
+  T_delay: 600.0   # 延迟时间 (s)
+  alpha: 3600.0    # 极点时间常数 (s)
+  dt: 60.0         # 时间步长 (s)
+  initial_V: 15000.0  # 初始蓄水量 (m³)
+
+physical_relations:
+  V_to_H:
+    type: linear
+    base_level: 99.0
+    coefficient: 0.00015
+  H_to_Q:
+    type: weir
+    threshold: 99.0
+    coefficient: 30.0
+    exponent: 1.6
+
+solver_config:
+  enable_parameter_adaptation: true
+  max_iterations: 50
+  tolerance: 1e-6

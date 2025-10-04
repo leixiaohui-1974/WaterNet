@@ -1,0 +1,22 @@
+model_type: muskingum
+optimization_info:
+  improvement_percent: 0.0
+  objective_score: 71134783.54227057
+  optimization_method: grid_search
+  original_K: 1800.0
+  original_x: 0.4
+parameters:
+  K: 1800.0
+  dt: 60.0
+  initial_V: 12000.0
+  x: 0.4
+physical_relations:
+  H_to_Q:
+    coefficient: 25.0
+    exponent: 1.5
+    threshold: 99.0
+    type: weir
+  V_to_H:
+    base_level: 99.0
+    coefficient: 0.000125
+    type: linear

@@ -1,0 +1,166 @@
+# 降阶模型理论分析配置文件
+# 用于统一各个分析脚本中的参数设置
+
+# 基础物理关系参数
+physical_relations:
+  V_to_H:
+    base_level: 100.0      # 基准水位 (m)
+    storage_coefficient: 1.0e-4  # 蓄量系数 (1/m²)
+    description: "线性蓄量-水位关系: H = base_level + V * coefficient"
+  
+  H_to_Q:
+    threshold: 100.0       # 出流阈值水位 (m)
+    flow_coefficient: 25.0 # 流量系数
+    exponent: 1.5         # 指数
+    description: "堰流公式: Q = coefficient * (H - threshold)^exponent"
+
+# Q-H耦合关系参数
+qh_coupling:
+  base_dimensions:
+    length: 1000.0        # 河段长度 (m)
+    width: 500.0         # 河道宽度 (m)
+  froude_correction:
+    max_correction: 0.1   # 最大流量修正系数
+    critical_froude: 0.5  # 临界弗劳德数
+  description: "考虑流量对水面线形态影响的蓄量计算"
+
+# 马斯京干模型参数
+muskingum:
+  default:
+    dt: 60.0             # 时间步长 (s)
+    K: 3600.0            # 滞时常数 (s)
+    x: 0.2               # 权重系数
+    initial_V: 15000.0   # 初始蓄水量 (m³)
+  
+  parameter_ranges:
+    K_range: [1800.0, 7200.0]    # K的合理范围
+    x_range: [0.0, 0.5]          # x的合理范围
+    
+  equilibrium_analysis:
+    test_volumes: [8000.0, 15000.0, 22000.0]  # 不同平衡点测试
+    deviation_tests: [5, 10, 20, 50, 100]     # 偏离百分比测试
+
+# 蓄量演算模型参数
+storage_routing:
+  default:
+    dt: 60.0
+    initial_V: 15000.0
+    iteration_count: 3    # 迭代求解次数
+  
+  validation:
+    convergence_tolerance: 1.0e-6
+    max_iterations: 10
+
+# IDZ模型参数
+idz:
+  default:
+    dt: 60.0
+    tau: 600.0           # 零点时间常数 (s)
+    T_delay: 300.0       # 延迟时间 (s)
+    alpha: 1500.0        # 极点时间常数 (s)
+    initial_V: 15000.0
+  
+  parameter_ranges:
+    tau_range: [100.0, 1800.0]
+    T_delay_range: [0.0, 600.0]
+    alpha_range: [600.0, 3600.0]
+  
+  approximation_tests:
+    # 用于验证IDZ向马斯京干退化的参数
+    muskingum_like:
+      tau: 100.0         # 小的零点时间常数
+      T_delay: 0.0       # 无延迟
+      alpha: 1800.0      # 接近马斯京干的K值
+
+# 测试输入信号
+test_signals:
+  step_input:
+    initial_flow: 0.0
+    step_flow: 20.0
+    step_time: 10       # 阶跃时间 (时间步)
+    total_steps: 60
+  
+  complex_input:
+    base_flow: 15.0
+    sine_amplitude: 5.0
+    sine_period: 1800   # 30分钟周期 (s)
+    step_magnitude: 10.0
+    step_delay: 1800    # 30分钟后阶跃
+    total_duration: 3600 # 总时长 (s)
+  
+  flood_hydrograph:
+    # 三角形洪水过程
+    peak_flow: 25.0
+    base_flow: 5.0
+    rising_time: 600    # 涨水时间 (s)
+    falling_time: 1200  # 落水时间 (s)
+
+# 分析设置
+analysis_settings:
+  linearization_test:
+    equilibrium_volume: 15000.0
+    deviation_percentages: [5, 10, 20, 50, 100]
+    steady_state_steps: 50  # 稳态判断步数
+    tolerance: 0.1         # 稳态容差 (%)
+  
+  model_comparison:
+    input_signal: "complex_input"
+    record_interval: 1
+    metrics:
+      - "peak_flow"
+      - "valley_flow" 
+      - "dynamic_range"
+      - "response_time"
+      - "steady_state_error"
+  
+  parameter_sensitivity:
+    variation_range: 0.2   # ±20%变化
+    parameters_to_test:
+      muskingum: ["K", "x"]
+      idz: ["tau", "T_delay", "alpha"]
+
+# 数值保护参数
+numerical_protection:
+  min_volume: 0.0
+  max_volume: 1.0e10
+  min_flow: 0.0
+  max_flow: 1000.0
+  tolerance: 1.0e-6
+
+# 输出控制
+output_control:
+  plot_results: false      # 是否绘图
+  save_results: false      # 是否保存结果
+  verbose_output: true     # 详细输出
+  decimal_places: 3        # 输出精度
+
+# 验证标准
+validation_criteria:
+  mass_balance_tolerance: 5.0    # 质量平衡容差 (%)
+  steady_state_tolerance: 1.0    # 稳态容差 (%)
+  physical_bounds_check: true    # 物理边界检查
+  monotonic_check: true          # 单调性检查
+
+# 理论分析专用参数
+theory_analysis:
+  equilibrium_points:
+    low_flow: 
+      Q: 5.0
+      description: "枯水期工况"
+    design_flow:
+      Q: 15.0
+      description: "设计工况"
+    high_flow:
+      Q: 25.0
+      description: "洪水期工况"
+  
+  model_relationships:
+    # IDZ到马斯京干的近似条件
+    idz_to_muskingum:
+      tau_threshold: 50.0    # tau小于此值时近似马斯京干
+      T_threshold: 30.0      # T小于此值时近似马斯京干
+      
+  comparison_metrics:
+    response_time_threshold: 0.9  # 90%响应时间
+    steady_state_threshold: 0.95  # 95%稳态判断
+    correlation_threshold: 0.9    # 相关性阈值

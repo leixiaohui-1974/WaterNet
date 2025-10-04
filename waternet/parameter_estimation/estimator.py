@@ -178,22 +178,62 @@ class ParameterEstimator:
         
         for order in poly_orders:
             try:
-                params = np.polyfit(x_clean, y_clean, order)
-                y_pred = np.polyval(params, x_clean)
+                # 添加正则化以提高数值稳定性
+                if len(x_clean) <= order + 1:
+                    warnings.warn(f"{curve_type}曲线数据点不足，跳过{order}阶拟合")
+                    continue
+                    
+                # 使用ridge回归提高数值稳定性
+                from sklearn.preprocessing import PolynomialFeatures
+                from sklearn.linear_model import Ridge
+                from sklearn.pipeline import Pipeline
                 
-                rmse = np.sqrt(np.mean((y_clean - y_pred)**2))
-                r2 = 1 - np.sum((y_clean - y_pred)**2) / np.sum((y_clean - np.mean(y_clean))**2)
-                aic = len(x_clean) * np.log(rmse**2) + 2 * (order + 1)
+                # 检查条件数
+                X_matrix = np.vander(x_clean, order + 1, increasing=True)
+                cond_num = np.linalg.cond(X_matrix)
+                
+                if cond_num > 1e12:  # 条件数过大，使用ridge回归
+                    poly_features = PolynomialFeatures(degree=order)
+                    ridge_reg = Ridge(alpha=0.1)  # L2正则化
+                    pipeline = Pipeline([('poly', poly_features), ('ridge', ridge_reg)])
+                    
+                    X_reshaped = x_clean.reshape(-1, 1)
+                    pipeline.fit(X_reshaped, y_clean)
+                    y_pred = pipeline.predict(X_reshaped)
+                    
+                    # 获取等效的多项式系数（近似）
+                    params = np.polyfit(x_clean, y_clean, order, rcond=1e-10)
+                else:
+                    # 使用标准多项式拟合
+                    params = np.polyfit(x_clean, y_clean, order, rcond=1e-10)
+                    y_pred = np.polyval(params, x_clean)
+                
+                # 计算拟合质量指标
+                residuals = y_clean - y_pred
+                rmse = np.sqrt(np.mean(residuals**2))
+                
+                # 防止除零
+                y_var = np.var(y_clean)
+                if y_var > 1e-15:
+                    r2 = 1 - np.var(residuals) / y_var
+                else:
+                    r2 = 0.0
+                    
+                # AIC惩罚过拟合
+                n_params = order + 1
+                n_data = len(x_clean)
+                aic = n_data * np.log(rmse**2 + 1e-15) + 2 * n_params
                 
                 fit_results[order] = {
                     'parameters': params,
                     'rmse': rmse,
                     'r2': r2,
                     'aic': aic,
-                    'score': aic
+                    'score': aic,
+                    'condition_number': cond_num
                 }
                 
-                if aic < best_score:
+                if aic < best_score and rmse < 1e6:  # 添加RMSE检查
                     best_score = aic
                     best_order = order
                     best_params = params

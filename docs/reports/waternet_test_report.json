@@ -1,0 +1,119 @@
+{
+  "saint_venant": {
+    "model_creation": true,
+    "steady_state": true,
+    "steady_results": [
+      {
+        "Q": 5.0,
+        "volume": 1300.0000000000255,
+        "H_upstream": 100.0,
+        "H_downstream": 99.5
+      },
+      {
+        "Q": 10.0,
+        "volume": 1300.0000000000255,
+        "H_upstream": 100.0,
+        "H_downstream": 99.5
+      },
+      {
+        "Q": 15.0,
+        "volume": 1300.0000000000255,
+        "H_upstream": 100.0,
+        "H_downstream": 99.5
+      },
+      {
+        "Q": 20.0,
+        "volume": 1300.0000000000255,
+        "H_upstream": 100.0,
+        "H_downstream": 99.5
+      },
+      {
+        "Q": 25.0,
+        "volume": 1300.0000000000255,
+        "H_upstream": 100.0,
+        "H_downstream": 99.5
+      }
+    ],
+    "topology": {
+      "sections": 3,
+      "segments": 2,
+      "internal_nodes": 1
+    },
+    "variables": true
+  },
+  "reduced_order_models": {
+    "muskingum": {
+      "success": true,
+      "timesteps": 19,
+      "peak_outflow": 45.92793267718459,
+      "total_outflow": 571.6662706464138,
+      "peak_delay": -8.0
+    },
+    "storage_routing": {
+      "success": true,
+      "timesteps": 19,
+      "peak_outflow": 45.92793267718459,
+      "total_outflow": 413.444309176156
+    },
+    "idz": {
+      "success": true,
+      "timesteps": 19,
+      "peak_outflow": 45.92793267718459,
+      "total_outflow": 303.2524934307039,
+      "delay_steps": 2
+    }
+  },
+  "parameter_estimation": {
+    "static_curves": {
+      "success": false,
+      "error": "'V_to_H_points'"
+    }
+  },
+  "digital_twin": {
+    "coordination": {
+      "success": true,
+      "timesteps": 18,
+      "hf_peak_flow": 42.0,
+      "rom_peak_flow": 40.44001855073068,
+      "sync_errors": [
+        35.44001855073068,
+        30.742987011054375,
+        25.322889287187607,
+        18.063197278555172,
+        9.14604903315367,
+        0.07633205923778519,
+        8.385606112778596,
+        14.684060953097546,
+        17.982668779523532,
+        13.825968900362788,
+        6.516467029039738,
+        2.4455594094790456,
+        9.332137685768252,
+        15.536876528761496,
+        18.75104716947818,
+        21.64698309329222,
+        21.879955064253387,
+        20.90174169155503
+      ]
+    }
+  },
+  "configuration": {
+    "channel_validation": true,
+    "model_validation": true,
+    "section_creation": true,
+    "relation_creation": true
+  },
+  "performance": {
+    "saint_venant": {
+      "runs": 20,
+      "total_time": 0.004998683929443359,
+      "avg_time_per_run": 0.00024993419647216796,
+      "runs_per_second": 4001.053133644949
+    },
+    "muskingum": {
+      "timesteps": 180,
+      "total_time": 0.005716800689697266,
+      "timesteps_per_second": 31486.14229710568
+    }
+  }
+}

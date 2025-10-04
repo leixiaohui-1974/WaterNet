@@ -1,0 +1,17 @@
+model_type: muskingum
+parameters:
+  K: 3600.0
+  x: 0.2
+  dt: 60.0
+  initial_V: 12000.0
+
+physical_relations:
+  V_to_H:
+    type: linear
+    base_level: 99.0
+    coefficient: 0.000125
+  H_to_Q:
+    type: weir
+    threshold: 99.0
+    coefficient: 25.0
+    exponent: 1.5

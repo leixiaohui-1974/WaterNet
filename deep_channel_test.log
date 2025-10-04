@@ -1,0 +1,45 @@
+2025-10-03 20:08:14,769 - DeepChannelTest - INFO - 开始明渠模型深度测试案例综合验证
+2025-10-03 20:08:14,769 - DeepChannelTest - INFO - 开始测试: 几何配置测试
+2025-10-03 20:08:14,770 - DeepChannelTest - INFO - ✅ 几何配置测试 通过
+2025-10-03 20:08:14,770 - DeepChannelTest - INFO - 开始测试: 增强降阶模型测试
+2025-10-03 20:08:14,771 - DeepChannelTest - ERROR - ❌ 增强降阶模型测试 失败: 'EnhancedMuskingumModel' object has no attribute '_compute_coefficients'
+2025-10-03 20:08:14,775 - DeepChannelTest - INFO - 开始测试: 参数辨识算法测试
+2025-10-03 20:08:14,776 - DeepChannelTest - INFO - ✅ 参数辨识算法测试 通过
+2025-10-03 20:08:14,777 - DeepChannelTest - INFO - 开始测试: 验证工具测试
+2025-10-03 20:08:14,777 - ValidationAnalyzer - INFO - 开始非恒定流验证分析
+2025-10-03 20:08:14,778 - PerformanceEvaluator - INFO - 开始孪生性能对比分析
+2025-10-03 20:08:14,778 - DeepChannelTest - INFO - ✅ 验证工具测试 通过
+2025-10-03 20:08:14,778 - DeepChannelTest - INFO - 开始测试: 可视化工具测试
+2025-10-03 20:08:14,780 - DeepChannelTest - INFO - ✅ 可视化工具测试 通过
+2025-10-03 20:08:14,781 - DeepChannelTest - INFO - 开始测试: 孪生协调器测试
+2025-10-03 20:08:14,782 - IDZ_TwinModel - INFO - IDZ模型初始化: τ=600.0s, T=300.0s, α=1200.0s, 延迟步数=30
+2025-10-03 20:08:14,782 - TwinCoordinator_HostModel_TwinModel - INFO - 增强孪生协调器初始化完成 - 类型: ROM-IDZ
+2025-10-03 20:08:14,782 - TwinCoordinator_HostModel_TwinModel - INFO - 开始增强同步仿真
+2025-10-03 20:08:14,789 - DeepChannelTest - INFO - ✅ 孪生协调器测试 通过
+2025-10-03 20:08:14,790 - DeepChannelTest - INFO - 开始测试: 框架集成测试
+2025-10-03 20:08:14,792 - DeepChannelTest - INFO - 深度测试框架初始化完成
+2025-10-03 20:08:14,792 - DeepChannelTest - INFO - ✅ 框架集成测试 通过
+2025-10-03 20:08:50,533 - DeepChannelTest - INFO - 开始明渠模型深度测试案例综合验证
+2025-10-03 20:08:50,534 - DeepChannelTest - INFO - 开始测试: 几何配置测试
+2025-10-03 20:08:50,535 - DeepChannelTest - INFO - ✅ 几何配置测试 通过
+2025-10-03 20:08:50,535 - DeepChannelTest - INFO - 开始测试: 增强降阶模型测试
+2025-10-03 20:08:50,536 - Enhanced_Muskingum_Enhanced_Muskingum - INFO - 参数更新: K 1000.0->1200.0, x 0.200->0.250
+2025-10-03 20:08:50,537 - IDZ_IDZ_Model - INFO - IDZ模型初始化: τ=600.0s, T=300.0s, α=1200.0s, 延迟步数=30
+2025-10-03 20:08:50,537 - IDZ_IDZ_Model - INFO - IDZ参数更新: τ 600.0->700.0, T 300.0->250.0, α 1200.0->1400.0
+2025-10-03 20:08:50,538 - DeepChannelTest - INFO - ✅ 增强降阶模型测试 通过
+2025-10-03 20:08:50,539 - DeepChannelTest - INFO - 开始测试: 参数辨识算法测试
+2025-10-03 20:08:50,539 - DeepChannelTest - INFO - ✅ 参数辨识算法测试 通过
+2025-10-03 20:08:50,539 - DeepChannelTest - INFO - 开始测试: 验证工具测试
+2025-10-03 20:08:50,539 - ValidationAnalyzer - INFO - 开始非恒定流验证分析
+2025-10-03 20:08:50,540 - PerformanceEvaluator - INFO - 开始孪生性能对比分析
+2025-10-03 20:08:50,540 - DeepChannelTest - INFO - ✅ 验证工具测试 通过
+2025-10-03 20:08:50,540 - DeepChannelTest - INFO - 开始测试: 可视化工具测试
+2025-10-03 20:08:50,542 - DeepChannelTest - INFO - ✅ 可视化工具测试 通过
+2025-10-03 20:08:50,543 - DeepChannelTest - INFO - 开始测试: 孪生协调器测试
+2025-10-03 20:08:50,544 - IDZ_TwinModel - INFO - IDZ模型初始化: τ=600.0s, T=300.0s, α=1200.0s, 延迟步数=30
+2025-10-03 20:08:50,544 - TwinCoordinator_HostModel_TwinModel - INFO - 增强孪生协调器初始化完成 - 类型: ROM-IDZ
+2025-10-03 20:08:50,544 - TwinCoordinator_HostModel_TwinModel - INFO - 开始增强同步仿真
+2025-10-03 20:08:50,549 - DeepChannelTest - INFO - ✅ 孪生协调器测试 通过
+2025-10-03 20:08:50,549 - DeepChannelTest - INFO - 开始测试: 框架集成测试
+2025-10-03 20:08:50,551 - DeepChannelTest - INFO - 深度测试框架初始化完成
+2025-10-03 20:08:50,552 - DeepChannelTest - INFO - ✅ 框架集成测试 通过

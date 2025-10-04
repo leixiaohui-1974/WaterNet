@@ -1,7 +1,7 @@
 """
-WaterNet 基础使用示例
+WaterNet 基础使用示例（简化配置版）
 
-演示WaterNet框架的基本功能和使用方法。
+演示WaterNet框架的基本功能，使用配置文件驱动。
 
 Author: WaterNet Development Team
 Date: 2024-10-03
@@ -10,57 +10,274 @@ Date: 2024-10-03
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from pathlib import Path
 
 # 导入WaterNet组件
-from waternet.models.saint_venant import SaintVenantModel
-from waternet.models.lumped_models import MuskingumModel, StorageRoutingModel
-from waternet.parameter_estimation.estimator import ParameterEstimator
-from waternet.coordination.twinning_harness import SynchronizedTwinningHarness
+from waternet.models import SaintVenantModel, MuskingumModel
+from waternet.config import ConfigManager
 
 
-def create_simple_channel():
-    """创建简单的矩形明渠"""
-    print("创建简单矩形明渠...")
+def main():
+    """
+    主演示函数
+    """
+    print("="*60)
+    print("WaterNet 基础使用演示（配置驱动版）")
+    print("="*60)
     
-    # 定义断面几何
-    sections = [
-        {
-            'mileage': 0.0,        # 上游断面，里程0m
-            'elevation': 100.0,     # 底高程100m
-            'roughness': 0.025,     # 曼宁糙率
-            'area_func': lambda h: max(0, h - 100) * 10,      # 矩形断面：宽10m
-            'top_width_func': lambda h: 10 if h > 100 else 0  # 水面宽度
-        },
-        {
-            'mileage': 500.0,      # 中间断面，里程500m
-            'elevation': 99.5,     # 底高程99.5m
-            'roughness': 0.025,
-            'area_func': lambda h: max(0, h - 99.5) * 10,
-            'top_width_func': lambda h: 10 if h > 99.5 else 0
-        },
-        {
-            'mileage': 1000.0,     # 下游断面，里程1000m
-            'elevation': 99.0,     # 底高程99m
-            'roughness': 0.025,
-            'area_func': lambda h: max(0, h - 99) * 10,
-            'top_width_func': lambda h: 10 if h > 99 else 0
-        }
-    ]
+    # 1. 初始化配置管理器
+    config_dir = Path(__file__).parent / 'configs'
+    config_manager = ConfigManager(config_dir)
+    
+    print(f"配置目录: {config_dir}")
+    
+    # 如果配置文件不存在，创建默认配置
+    if not (config_dir / 'simple_channel.yaml').exists():
+        print("创建默认配置文件...")
+        config_manager.create_default_configs()
+    
+    # 2. 加载渠道配置并创建模型
+    print("\n1. 加载渠道配置并创建圣维南模型")
+    channel_config = config_manager.load_config('simple_channel.yaml')
+    print(f"渠道名称: {channel_config['name']}")
+    print(f"断面数量: {len(channel_config['sections'])}")
+    
+    # 创建断面数据
+    sections = config_manager.create_channel_sections(channel_config)
     
     # 创建圣维南模型
     sv_model = SaintVenantModel(
-        name="SimpleChannel",
+        name=channel_config['name'],
         upstream_node="upstream",
-        downstream_node="downstream", 
+        downstream_node="downstream",
         sections=sections
     )
     
-    print(f"明渠模型创建完成: {sv_model.name}")
-    print(f"断面数量: {len(sv_model.sections)}")
-    print(f"分段数量: {len(sv_model.segments)}")
-    print(f"内部节点数量: {len(sv_model.internal_nodes)}")
+    print(f"✅ 圣维南模型创建成功，分段数: {len(sv_model.segments)}")
     
-    return sv_model
+    # 3. 恒定流计算演示
+    print("\n2. 恒定流计算演示")
+    Q_steady = 15.0
+    H_downstream = 99.5
+    
+    try:
+        steady_result = sv_model.compute_steady_state(Q_steady, H_downstream)
+        print(f"✅ 恒定流计算成功")
+        print(f"   流量: {Q_steady} m³/s")
+        print(f"   下游水位: {H_downstream} m")
+        print(f"   总蓄水量: {steady_result['total_volume']:.1f} m³")
+        
+        # 显示各断面水位
+        for i in range(len(sections)):
+            H_key = f'H_section_{i}'
+            if H_key in steady_result:
+                print(f"   断面{i}水位: {steady_result[H_key]:.3f} m")
+                
+    except Exception as e:
+        print(f"❌ 恒定流计算失败: {e}")
+        return
+    
+    # 4. 加载模型配置并创建降阶模型
+    print("\n3. 创建降阶模型")
+    model_config = config_manager.load_config('muskingum_model.yaml')
+    
+    # 创建物理关系函数
+    V_to_H_func, H_to_Q_func = config_manager.create_physical_relations(
+        model_config['physical_relations'])
+    
+    # 创建马斯京干模型
+    params = model_config['parameters']
+    muskingum_model = MuskingumModel(
+        dt=params['dt'],
+        K=params['K'],
+        x=params['x'],
+        initial_V=params['initial_V'],
+        V_to_H_func=V_to_H_func,
+        H_to_Q_func=H_to_Q_func,
+        name="ConfiguredMuskingum"
+    )
+    
+    print(f"✅ 马斯京干模型创建成功")
+    print(f"   参数: K={params['K']:.0f}s, x={params['x']:.2f}")
+    print(f"   系数: C0={muskingum_model.C0:.4f}, C1={muskingum_model.C1:.4f}, C2={muskingum_model.C2:.4f}")
+    
+    # 5. 加载仿真配置并运行仿真
+    print("\n4. 运行非恒定流仿真")
+    sim_config = config_manager.load_config('simulation_config.yaml')
+    
+    # 获取边界条件
+    bc = sim_config['boundary_conditions']
+    Q_in_series = np.array(bc['upstream_values'])
+    H_down = bc['downstream_values']
+    
+    print(f"   仿真类型: {sim_config['simulation_type']}")
+    print(f"   时间步长: {sim_config['time_step']}s")
+    print(f"   入流范围: {Q_in_series.min():.1f} - {Q_in_series.max():.1f} m³/s")
+    
+    try:
+        # 运行降阶模型仿真
+        results_df = muskingum_model.run_simulation(Q_in_series)
+        
+        print(f"✅ 仿真完成，时间步数: {len(results_df)}")
+        
+        # 6. 结果分析和可视化
+        print("\n5. 结果分析")
+        
+        # 基本统计
+        Q_out_mean = results_df['Q_out'].mean()
+        Q_out_max = results_df['Q_out'].max()
+        Q_in_mean = np.mean(Q_in_series)
+        
+        print(f"   平均入流: {Q_in_mean:.2f} m³/s")
+        print(f"   平均出流: {Q_out_mean:.2f} m³/s")
+        print(f"   最大出流: {Q_out_max:.2f} m³/s")
+        print(f"   质量平衡误差: {abs(Q_in_mean - Q_out_mean)/Q_in_mean*100:.1f}%")
+        
+        # 绘制结果
+        if sim_config.get('output', {}).get('plot_results', False):
+            plot_results(results_df, Q_in_series, sim_config)
+        
+        # 保存结果
+        if sim_config.get('output', {}).get('save_results', False):
+            save_results(results_df, Q_in_series, sim_config)
+            
+    except Exception as e:
+        print(f"❌ 仿真失败: {e}")
+        return
+    
+
+
+def plot_results(results_df: pd.DataFrame, Q_in_series: np.ndarray, 
+                 sim_config: dict):
+    """
+    绘制仿真结果
+    """
+    print("\n6. 生成结果图表")
+    
+    try:
+        fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+        fig.suptitle('WaterNet 仿真结果', fontsize=14)
+        
+        time_minutes = results_df['time'].values / 60.0  # 转换为分钟
+        
+        # 1. 入流和出流对比
+        axes[0, 0].plot(time_minutes[1:], Q_in_series, 'b-', label='入流', linewidth=2)
+        axes[0, 0].plot(time_minutes, results_df['Q_out'], 'r--', label='出流', linewidth=2)
+        axes[0, 0].set_xlabel('时间 (分钟)')
+        axes[0, 0].set_ylabel('流量 (m³/s)')
+        axes[0, 0].set_title('流量对比')
+        axes[0, 0].legend()
+        axes[0, 0].grid(True, alpha=0.3)
+        
+        # 2. 水位变化
+        axes[0, 1].plot(time_minutes, results_df['H_out'], 'g-', linewidth=2)
+        axes[0, 1].set_xlabel('时间 (分钟)')
+        axes[0, 1].set_ylabel('水位 (m)')
+        axes[0, 1].set_title('出口水位')
+        axes[0, 1].grid(True, alpha=0.3)
+        
+        # 3. 蓄水量变化
+        axes[1, 0].plot(time_minutes, results_df['V'], 'purple', linewidth=2)
+        axes[1, 0].set_xlabel('时间 (分钟)')
+        axes[1, 0].set_ylabel('蓄水量 (m³)')
+        axes[1, 0].set_title('蓄水量变化')
+        axes[1, 0].grid(True, alpha=0.3)
+        
+        # 4. 流量差值
+        if len(Q_in_series) == len(results_df) - 1:
+            Q_diff = Q_in_series - results_df['Q_out'].values[1:]
+            axes[1, 1].plot(time_minutes[1:], Q_diff, 'orange', linewidth=2)
+            axes[1, 1].set_xlabel('时间 (分钟)')
+            axes[1, 1].set_ylabel('流量差 (m³/s)')
+            axes[1, 1].set_title('入流-出流差值')
+            axes[1, 1].grid(True, alpha=0.3)
+            axes[1, 1].axhline(y=0, color='k', linestyle='-', alpha=0.5)
+        
+        plt.tight_layout()
+        
+        # 保存图表
+        output_dir = Path(__file__).parent / 'outputs'
+        output_dir.mkdir(exist_ok=True)
+        
+        plot_file = output_dir / 'simulation_results.png'
+        plt.savefig(plot_file, dpi=300, bbox_inches='tight')
+        print(f"✅ 结果图表已保存: {plot_file}")
+        
+        plt.close()
+        
+    except Exception as e:
+        print(f"❌ 绘图失败: {e}")
+
+
+def save_results(results_df: pd.DataFrame, Q_in_series: np.ndarray, 
+                 sim_config: dict):
+    """
+    保存仿真结果
+    """
+    print("\n7. 保存仿真结果")
+    
+    try:
+        output_dir = Path(__file__).parent / 'outputs'
+        output_dir.mkdir(exist_ok=True)
+        
+        # 添加入流数据到结果
+        results_extended = results_df.copy()
+        Q_in_extended = [0.0] + list(Q_in_series)  # 添加初始值
+        results_extended['Q_in'] = Q_in_extended[:len(results_extended)]
+        
+        # 保存为CSV
+        output_format = sim_config.get('output', {}).get('output_format', 'csv')
+        
+        if output_format == 'csv':
+            csv_file = output_dir / 'simulation_results.csv'
+            results_extended.to_csv(csv_file, index=False)
+            print(f"✅ 结果已保存为CSV: {csv_file}")
+        
+        elif output_format == 'excel':
+            excel_file = output_dir / 'simulation_results.xlsx'
+            with pd.ExcelWriter(excel_file) as writer:
+                results_extended.to_excel(writer, sheet_name='仿真结果', index=False)
+            print(f"✅ 结果已保存为Excel: {excel_file}")
+        
+        # 保存摘要统计
+        summary = {
+            '仿真参数': {
+                '模型类型': 'Muskingum',
+                '时间步长(s)': sim_config['time_step'],
+                '总时间(s)': sim_config['total_time'],
+                '时间步数': len(results_df)
+            },
+            '流量统计': {
+                '平均入流(m³/s)': float(np.mean(Q_in_series)),
+                '最大入流(m³/s)': float(np.max(Q_in_series)),
+                '平均出流(m³/s)': float(results_df['Q_out'].mean()),
+                '最大出流(m³/s)': float(results_df['Q_out'].max())
+            },
+            '水位统计': {
+                '平均水位(m)': float(results_df['H_out'].mean()),
+                '最高水位(m)': float(results_df['H_out'].max()),
+                '最低水位(m)': float(results_df['H_out'].min())
+            }
+        }
+        
+        import yaml
+        summary_file = output_dir / 'simulation_summary.yaml'
+        with open(summary_file, 'w', encoding='utf-8') as f:
+            yaml.dump(summary, f, default_flow_style=False, allow_unicode=True)
+        
+        print(f"✅ 仿真摘要已保存: {summary_file}")
+        
+    except Exception as e:
+        print(f"❌ 保存结果失败: {e}")
+
+
+if __name__ == "__main__":
+    # 设置matplotlib支持中文显示
+    plt.rcParams['font.sans-serif'] = ['DejaVu Sans']
+    plt.rcParams['axes.unicode_minus'] = False
+    
+    # 运行演示
+    main()
 
 
 def demonstrate_steady_flow(sv_model):
@@ -349,7 +566,9 @@ def main():
     print("="*60)
     
     # 1. 创建物理模型
-    sv_model = create_simple_channel()
+    configs_dir = os.path.join(os.path.dirname(__file__), 'configs')
+    config_manager = ConfigManager(configs_dir)
+    sv_model = create_saint_venant_model(config_manager)
     
     # 2. 演示恒定流计算
     steady_result = demonstrate_steady_flow(sv_model)

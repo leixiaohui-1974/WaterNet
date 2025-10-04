@@ -1,0 +1,21 @@
+name: simple_rectangular_channel
+description: 简单矩形明渠示例
+sections:
+  - mileage: 0.0
+    elevation: 100.0
+    roughness: 0.025
+    cross_section:
+      type: rectangular
+      width: 10.0
+  - mileage: 500.0
+    elevation: 99.5
+    roughness: 0.025
+    cross_section:
+      type: rectangular
+      width: 10.0
+  - mileage: 1000.0
+    elevation: 99.0
+    roughness: 0.025
+    cross_section:
+      type: rectangular
+      width: 10.0
