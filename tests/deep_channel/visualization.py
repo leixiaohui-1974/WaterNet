@@ -113,7 +113,7 @@ class TestResultsVisualizer:
                    transform=ax.transAxes)
         
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 'overview_dashboard.png'), 
+        plt.savefig(os.path.join(output_dir, 'overview_dashboard.svg'), 
                    dpi=300, bbox_inches='tight')
         plt.close()
     
@@ -161,7 +161,7 @@ class TestResultsVisualizer:
                    transform=ax.transAxes, fontsize=12)
         
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 'unsteady_flow.png'), 
+        plt.savefig(os.path.join(output_dir, 'unsteady_flow.svg'), 
                    dpi=300, bbox_inches='tight')
         plt.close()
     
@@ -178,7 +178,7 @@ class TestResultsVisualizer:
                    transform=ax.transAxes, fontsize=12)
         
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 'parameter_identification.png'), 
+        plt.savefig(os.path.join(output_dir, 'parameter_identification.svg'), 
                    dpi=300, bbox_inches='tight')
         plt.close()
     
@@ -194,7 +194,7 @@ class TestResultsVisualizer:
                    transform=ax.transAxes, fontsize=12)
         
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 'twinning_results.png'), 
+        plt.savefig(os.path.join(output_dir, 'twinning_results.svg'), 
                    dpi=300, bbox_inches='tight')
         plt.close()
     
@@ -210,7 +210,7 @@ class TestResultsVisualizer:
                    transform=ax.transAxes, fontsize=12)
         
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 'online_identification.png'), 
+        plt.savefig(os.path.join(output_dir, 'online_identification.svg'), 
                    dpi=300, bbox_inches='tight')
         plt.close()
     
@@ -226,7 +226,7 @@ class TestResultsVisualizer:
                    transform=ax.transAxes, fontsize=12)
         
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 'multi_model_comparison.png'), 
+        plt.savefig(os.path.join(output_dir, 'multi_model_comparison.svg'), 
                    dpi=300, bbox_inches='tight')
         plt.close()
     

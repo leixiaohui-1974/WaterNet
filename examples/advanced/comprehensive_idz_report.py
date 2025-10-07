@@ -288,7 +288,7 @@ def plot_comprehensive_summary():
     ax4.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=10)
     
     plt.tight_layout()
-    save_path = "IDZ模型辨识综合分析总结.png"
+    save_path = "IDZ模型辨识综合分析总结.svg"
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     print(f"综合分析总结图已保存: {save_path}")
     plt.show()

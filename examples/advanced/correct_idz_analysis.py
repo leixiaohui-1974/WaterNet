@@ -261,7 +261,7 @@ def plot_fitting_results(all_fits):
             axes[i].set_visible(False)
         
         plt.tight_layout()
-        plt.savefig(f"{scenario}_正确IDZ拟合结果.png", dpi=300, bbox_inches='tight')
+        plt.savefig(f"{scenario}_正确IDZ拟合结果.svg", dpi=300, bbox_inches='tight')
         plt.show()
 
 def main():

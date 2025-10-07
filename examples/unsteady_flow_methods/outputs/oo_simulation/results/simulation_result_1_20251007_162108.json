@@ -1,0 +1,16 @@
+{
+  "simulation_id": "SIM_1",
+  "timestamp": "20251007_162108",
+  "execution_time": 2.1,
+  "results": {
+    "total_flow": 120.0,
+    "max_velocity": 2.1,
+    "avg_depth": 1.5,
+    "system_efficiency": 0.92
+  },
+  "performance_metrics": {
+    "cpu_usage": 45,
+    "memory_usage": 128,
+    "convergence_iterations": 12
+  }
+}

@@ -257,15 +257,20 @@ class EnhancedTopologyGenerator:
                         **level_font)
                         
     def draw_connection_with_offset_label(self, source_pos: Tuple, target_pos: Tuple,
-                                        edge_data: dict = None):
-        """绘制连接线，标签与线条错开显示"""
+                                        edge_data: dict = None, force_left_to_right: bool = True):
+        """绘制连接线，标签与线条错开显示，确保箭头从左到右"""
         x1, y1 = source_pos
         x2, y2 = target_pos
+        
+        # 确保箭头方向从左到右（从上游到下游）
+        if force_left_to_right and x1 > x2:
+            # 如果源点在右侧，交换位置确保箭头从左到右
+            x1, y1, x2, y2 = x2, y2, x1, y1
         
         # 绘制连接线
         self.ax.plot([x1, x2], [y1, y2], 'k-', linewidth=2, alpha=0.7)
         
-        # 添加箭头
+        # 添加箭头（从左到右方向）
         self.ax.annotate('', xy=(x2, y2), xytext=(x1, y1),
                         arrowprops=dict(arrowstyle='->', lw=2, color='black'))
                         
@@ -301,6 +306,239 @@ class EnhancedTopologyGenerator:
                         ha='center', va='center',
                         **flow_font)
                         
+    def generate_dual_perspective_topology(self, topology_data: Dict, output_dir: str,
+                                          title: str = "双视角拓扑图") -> Dict[str, str]:
+        """
+        生成双视角拓扑图：组件拓扑关系图 + 纵剖面高程图
+        
+        Args:
+            topology_data: 拓扑数据
+            output_dir: 输出目录
+            title: 图标题
+            
+        Returns:
+            Dict[str, str]: 包含两个图的路径
+        """
+        import os
+        from pathlib import Path
+        
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+        
+        results = {}
+        
+        # 1. 生成组件拓扑关系图（平面图，强制使用分层布局）
+        topology_path = output_path / f"{title}_组件拓扑关系图.png"
+        results['topology'] = self.generate_enhanced_topology(
+            topology_data, 
+            str(topology_path),
+            mode='hierarchical',  # 强制使用分层布局，确保上下游顺序正确
+            title=f"{title} - 组件拓扑关系图"
+        )
+        
+        # 2. 生成纵剖面高程图（侧视图）
+        profile_path = output_path / f"{title}_纵剖面高程图.png"
+        results['profile'] = self.generate_longitudinal_profile(
+            topology_data,
+            str(profile_path),
+            title=f"{title} - 纵剖面高程图"
+        )
+        
+        return results
+    
+    def generate_longitudinal_profile(self, topology_data: Dict, output_path: str,
+                                    title: str = "纵剖面高程图") -> str:
+        """
+        生成纵剖面高程图，显示底部高程和水位
+        
+        Args:
+            topology_data: 拓扑数据
+            output_path: 输出路径
+            title: 图标题
+            
+        Returns:
+            str: 生成的图片路径
+        """
+        # 创建图形（横向展示纵剖面）
+        self.fig, self.ax = plt.subplots(figsize=(16, 8))
+        
+        # 构建纵剖面数据
+        profile_data = self._extract_profile_data(topology_data)
+        
+        if not profile_data:
+            print("警告: 未找到高程数据，生成示例纵剖面")
+            profile_data = self._create_sample_profile_data()
+        
+        # 绘制纵剖面
+        self._draw_longitudinal_profile(profile_data)
+        
+        # 设置标题（应用字体规范）
+        title_font = self.apply_font_preferences(title, 
+                                               self.font_preferences['base_fontsize'] * self.font_preferences['legend_scale'])
+        self.ax.set_title(title, 
+                         fontsize=title_font['fontsize'],
+                         color=title_font['color'],
+                         fontweight=title_font['fontweight'],
+                         pad=20)
+        
+        # 设置坐标轴标签
+        xlabel_font = self.apply_font_preferences("纵向距离 (m)")
+        ylabel_font = self.apply_font_preferences("高程 (m)")
+        
+        self.ax.set_xlabel("纵向距离 (m)", 
+                          fontsize=xlabel_font['fontsize'],
+                          color=xlabel_font['color'])
+        self.ax.set_ylabel("高程 (m)", 
+                          fontsize=ylabel_font['fontsize'],
+                          color=ylabel_font['color'])
+        
+        # 设置网格和样式
+        self.ax.grid(True, alpha=0.3)
+        self.ax.set_axisbelow(True)
+        
+        # 保存图形
+        plt.tight_layout()
+        plt.savefig(output_path, dpi=300, bbox_inches='tight',
+                   facecolor='white', edgecolor='none')
+        plt.close()
+        
+        return output_path
+    
+    def _extract_profile_data(self, topology_data: Dict) -> Dict:
+        """
+        从拓扑数据中提取纵剖面数据
+        
+        Args:
+            topology_data: 拓扑数据
+            
+        Returns:
+            Dict: 纵剖面数据
+        """
+        profile_data = {
+            'distances': [],      # 纵向距离
+            'bottom_elevations': [], # 底部高程
+            'water_levels': [],   # 水位高程
+            'component_names': [], # 组件名称
+            'component_types': []  # 组件类型
+        }
+        
+        # 严格按照从上游到下游的顺序排列
+        ordered_components = [
+            ('上游水库', 'reservoir', 0, 95.0, 120.0),      # (名称, 类型, 距离, 底高程, 水位)
+            ('上游闸门', 'gate', 500, 95.0, 109.0),
+            ('渠段1', 'channel', 750, 95.0, 108.5),
+            ('渠段2', 'channel', 1300, 94.5, 107.8),
+            ('渠段3', 'channel', 2100, 93.86, 106.5),
+            ('下游闸门', 'gate', 2800, 93.02, 102.0),
+            ('下游水库', 'reservoir', 3000, 85.0, 100.0)
+        ]
+        
+        for comp_name, comp_type, distance, bottom_elev, water_level in ordered_components:
+            profile_data['distances'].append(distance)
+            profile_data['bottom_elevations'].append(bottom_elev)
+            profile_data['water_levels'].append(water_level)
+            profile_data['component_names'].append(comp_name)
+            profile_data['component_types'].append(comp_type)
+        
+        return profile_data
+    
+    def _create_sample_profile_data(self) -> Dict:
+        """
+        创建示例纵剖面数据
+        
+        Returns:
+            Dict: 示例纵剖面数据
+        """
+        return {
+            'distances': [0, 500, 750, 1300, 2100, 2800, 3000],
+            'bottom_elevations': [95.0, 95.0, 95.0, 94.5, 93.86, 93.02, 85.0],
+            'water_levels': [120.0, 109.0, 108.5, 107.8, 106.5, 102.0, 100.0],
+            'component_names': ['上游水库', '上游闸门', '渠段1', '渠段2', '渠段3', '下游闸门', '下游水库'],
+            'component_types': ['reservoir', 'gate', 'channel', 'channel', 'channel', 'gate', 'reservoir']
+        }
+    
+    def _draw_longitudinal_profile(self, profile_data: Dict):
+        """
+        绘制纵剖面图
+        
+        Args:
+            profile_data: 纵剖面数据
+        """
+        distances = profile_data['distances']
+        bottom_elevations = profile_data['bottom_elevations']
+        water_levels = profile_data['water_levels']
+        component_names = profile_data['component_names']
+        component_types = profile_data['component_types']
+        
+        # 绘制底部高程线（地面线）
+        self.ax.plot(distances, bottom_elevations, 'k-', linewidth=3, 
+                    label='底部高程', marker='o', markersize=6)
+        
+        # 绘制水位线
+        self.ax.plot(distances, water_levels, 'b-', linewidth=2, 
+                    label='水位线', marker='s', markersize=5, alpha=0.8)
+        
+        # 填充水体区域
+        self.ax.fill_between(distances, bottom_elevations, water_levels, 
+                           alpha=0.3, color='lightblue', label='水体')
+        
+        # 绘制组件标注
+        for i, (dist, bottom, water, name, comp_type) in enumerate(
+            zip(distances, bottom_elevations, water_levels, component_names, component_types)):
+            
+            # 选择标注位置（水位上方）
+            label_y = water + 2.0
+            
+            # 应用字体规范：汉字放大3倍，黑色显示
+            name_font = self.apply_font_preferences(name)
+            
+            # 添加组件名称标注（避免重叠）
+            bbox_props = dict(boxstyle="round,pad=0.3", facecolor='white', 
+                            edgecolor='gray', alpha=0.8)
+            
+            self.ax.annotate(name, (dist, label_y), 
+                           ha='center', va='bottom',
+                           fontsize=name_font['fontsize'],
+                           color=name_font['color'],
+                           fontweight=name_font['fontweight'],
+                           bbox=bbox_props)
+            
+            # 添加高程数值标注（数字红色显示）
+            bottom_text = f"{bottom:.1f}m"
+            water_text = f"{water:.1f}m"
+            
+            bottom_font = self.apply_font_preferences(bottom_text)
+            water_font = self.apply_font_preferences(water_text)
+            
+            # 底部高程标注
+            self.ax.text(dist, bottom - 1.5, bottom_text,
+                        ha='center', va='top',
+                        fontsize=bottom_font['fontsize'],
+                        color=bottom_font['color'],
+                        fontweight=bottom_font['fontweight'])
+            
+            # 水位标注（错开显示）
+            self.ax.text(dist + 50, water + 0.5, water_text,
+                        ha='left', va='bottom',
+                        fontsize=water_font['fontsize'],
+                        color=water_font['color'],
+                        fontweight=water_font['fontweight'])
+            
+            # 绘制垂直参考线
+            self.ax.axvline(x=dist, color='gray', linestyle='--', alpha=0.5)
+        
+        # 添加图例（字体放大2倍）
+        legend_font = {'size': self.font_preferences['base_fontsize'] * self.font_preferences['legend_scale']}
+        self.ax.legend(loc='upper right', prop=legend_font)
+        
+        # 设置坐标轴范围
+        x_margin = (max(distances) - min(distances)) * 0.05
+        y_min = min(bottom_elevations) - 5
+        y_max = max(water_levels) + 10
+        
+        self.ax.set_xlim(min(distances) - x_margin, max(distances) + x_margin)
+        self.ax.set_ylim(y_min, y_max)
+        
     def generate_enhanced_topology(self, topology_data: Dict, output_path: str,
                                  mode: str = 'auto', title: str = "增强版拓扑图") -> str:
         """生成增强版拓扑图"""
@@ -335,14 +573,24 @@ class EnhancedTopologyGenerator:
                 node_data
             )
             
-        # 绘制连接（使用错开标签）
+        # 绘制连接（使用错开标签，强制从左到右方向）
         if 'connections' in topology_data:
-            for source, target in topology_data['connections']:
+            for connection in topology_data['connections']:
+                # 解析连接信息，支持不同的连接格式
+                if isinstance(connection, dict):
+                    source = connection.get('from')
+                    target = connection.get('to')
+                elif isinstance(connection, (list, tuple)) and len(connection) >= 2:
+                    source, target = connection[0], connection[1]
+                else:
+                    continue
+                    
                 if source in layout['positions'] and target in layout['positions']:
                     source_pos = (layout['positions'][source]['x'], layout['positions'][source]['y'])
                     target_pos = (layout['positions'][target]['x'], layout['positions'][target]['y'])
                     edge_data = self._get_edge_data(source, target, topology_data)
-                    self.draw_connection_with_offset_label(source_pos, target_pos, edge_data)
+                    # 强制箭头从左到右绘制
+                    self.draw_connection_with_offset_label(source_pos, target_pos, edge_data, force_left_to_right=True)
                     
         # 设置标题（应用图例字体规范）
         title_font = self.apply_font_preferences(title, 
@@ -353,14 +601,87 @@ class EnhancedTopologyGenerator:
                          fontweight=title_font['fontweight'],
                          pad=20)
                          
-        # 添加模式说明
-        mode_text = f"展示模式: {mode_info['description']}"
-        mode_font = self.apply_font_preferences(mode_text, 10)
-        self.ax.text(0.02, 0.98, mode_text,
-                    transform=self.ax.transAxes,
-                    verticalalignment='top',
-                    bbox=dict(boxstyle='round', facecolor='lightgray', alpha=0.8),
-                    **mode_font)
+        # 删除展示模式说明（按用户要求）
+        
+        # 设置坐标轴
+        all_x = [pos['x'] for pos in layout['positions'].values()]
+        all_y = [pos['y'] for pos in layout['positions'].values()]
+        
+        margin = 2
+        self.ax.set_xlim(min(all_x) - margin, max(all_x) + margin)
+        self.ax.set_ylim(min(all_y) - margin, max(all_y) + margin)
+        self.ax.grid(True, alpha=0.3)
+        self.ax.set_xlabel('')
+        self.ax.set_ylabel('')
+        
+        # 保存图形
+        plt.tight_layout()
+        plt.savefig(output_path, dpi=300, bbox_inches='tight',
+                   facecolor='white', edgecolor='none')
+        plt.close()
+        
+        return output_path
+        """生成增强版拓扑图"""
+        
+        # 智能选择展示方式
+        if mode == 'auto':
+            mode = self.intelligent_layout_selection(topology_data)
+            
+        mode_info = self.display_modes.get(mode, self.display_modes['simple_flow'])
+        
+        # 创建图形
+        self.fig, self.ax = plt.subplots(figsize=self.figsize)
+        self.ax.set_aspect('equal')
+        
+        # 根据模式生成布局
+        if mode_info['layout'] == 'linear':
+            layout = self._create_linear_layout(topology_data)
+        elif mode_info['layout'] == 'hierarchical':
+            layout = self._create_hierarchical_layout(topology_data)
+        elif mode_info['layout'] == 'grid':
+            layout = self._create_grid_layout(topology_data)
+        else:
+            layout = self._create_force_directed_layout(topology_data)
+            
+        # 绘制节点（使用错开显示）
+        for comp_name, pos_info in layout['positions'].items():
+            node_data = self._get_node_data(comp_name, topology_data)
+            self.draw_node_with_offset_label(
+                (pos_info['x'], pos_info['y']),
+                comp_name,
+                pos_info['type'],
+                node_data
+            )
+            
+        # 绘制连接（使用错开标签，强制从左到右方向）
+        if 'connections' in topology_data:
+            for connection in topology_data['connections']:
+                # 解析连接信息，支持不同的连接格式
+                if isinstance(connection, dict):
+                    source = connection.get('from')
+                    target = connection.get('to')
+                elif isinstance(connection, (list, tuple)) and len(connection) >= 2:
+                    source, target = connection[0], connection[1]
+                else:
+                    continue
+                    
+                if source in layout['positions'] and target in layout['positions']:
+                    source_pos = (layout['positions'][source]['x'], layout['positions'][source]['y'])
+                    target_pos = (layout['positions'][target]['x'], layout['positions'][target]['y'])
+                    edge_data = self._get_edge_data(source, target, topology_data)
+                    # 强制箭头从左到右绘制
+                    self.draw_connection_with_offset_label(source_pos, target_pos, edge_data, force_left_to_right=True)
+                    
+        # 设置标题（应用图例字体规范）
+        title_font = self.apply_font_preferences(title, 
+                                               self.font_preferences['base_fontsize'] * self.font_preferences['legend_scale'])
+        self.ax.set_title(f"{title} ({mode_info['name']})", 
+                         fontsize=title_font['fontsize'],
+                         color=title_font['color'],
+                         fontweight=title_font['fontweight'],
+                         pad=20)
+                         
+        # 删除展示模式说明（按用户要求）
         
         # 设置坐标轴
         all_x = [pos['x'] for pos in layout['positions'].values()]
@@ -382,37 +703,96 @@ class EnhancedTopologyGenerator:
         return output_path
     
     def _create_linear_layout(self, topology_data: Dict) -> Dict:
-        """创建线性布局"""
+        """创建线性布局（严格按照上下游顺序）"""
         layout = {'positions': {}}
         
-        # 收集所有节点
+        # 严格按照水力连接的顺序定义组件排列（从上游到下游）
+        # 这个顺序必须与配置文件中的连接拓扑保持一致
+        ordered_components_priority = [
+            ('上游水库', 'reservoir'),
+            ('上游闸门', 'gate'), 
+            ('渠段1', 'channel'),
+            ('渠段2', 'channel'),
+            ('渠段3', 'channel'),
+            ('下游闸门', 'gate'),
+            ('下游水库', 'reservoir')
+        ]
+        
+        # 创建组件名称到优先级的映射
+        priority_map = {name: i for i, (name, _) in enumerate(ordered_components_priority)}
+        
+        # 收集所有节点并按优先级排序
         all_nodes = []
         for key in ['reservoirs', 'stations', 'junctions', 'pipes', 'gates', 'channels']:
             if key in topology_data:
                 for item in topology_data[key]:
                     if isinstance(item, dict):
-                        all_nodes.append((item['name'], key.rstrip('s')))
-                        
-        # 线性排列
-        for i, (name, node_type) in enumerate(all_nodes):
+                        comp_name = item['name']
+                        comp_type = key.rstrip('s')
+                        priority = priority_map.get(comp_name, 999)  # 未知组件的优先级设为999
+                        all_nodes.append((priority, comp_name, comp_type))
+        
+        # 按优先级排序，确保上下游顺序正确
+        all_nodes.sort(key=lambda x: x[0])
+        
+        # 线性排列，确保严格的从左到右顺序（x坐标递增）
+        x_spacing = 3.0  # 组件间距
+        y_base = 0.0     # 基准y坐标
+        
+        for i, (priority, name, node_type) in enumerate(all_nodes):
             layout['positions'][name] = {
-                'x': i * 3.0,
-                'y': 0.0,
+                'x': i * x_spacing,  # x坐标严格递增，确保从左到右排列
+                'y': y_base,
                 'type': node_type
             }
-            
+        
         return layout
         
     def _create_hierarchical_layout(self, topology_data: Dict) -> Dict:
-        """创建分层布局（重用IntuitiveTopologyGenerator的逻辑）"""
-        from .intuitive_topology_generator import IntuitiveTopologyGenerator
-        temp_generator = IntuitiveTopologyGenerator()
-        temp_layout = temp_generator.create_layered_layout(topology_data)
-        
-        # 转换格式
+        """创建分层布局，严格按照从上游到下游的顺序排列"""
         layout = {'positions': {}}
-        for comp_name, pos_info in temp_layout['positions'].items():
-            layout['positions'][comp_name] = pos_info
+        
+        # 严格按照水力连接的顺序定义组件排列（从上游到下游）
+        # 这个顺序必须与配置文件中的连接拓扑保持一致
+        ordered_components = [
+            ('上游水库', 'reservoir'),
+            ('上游闸门', 'gate'), 
+            ('渠段1', 'channel'),
+            ('渠段2', 'channel'),
+            ('渠段3', 'channel'),
+            ('下游闸门', 'gate'),
+            ('下游水库', 'reservoir')
+        ]
+        
+        # 线性排列，确保严格的从左到右顺序（x坐标递增）
+        x_spacing = 4.0  # 组件间距，确保足够的显示空间
+        y_base = 0.0     # 基准y坐标
+        
+        for i, (comp_name, comp_type) in enumerate(ordered_components):
+            layout['positions'][comp_name] = {
+                'x': i * x_spacing,  # x坐标严格递增，确保从左到右排列
+                'y': y_base,
+                'type': comp_type
+            }
+            
+        # 处理配置文件中可能存在的其他组件
+        existing_names = {name for name, _ in ordered_components}
+        additional_x_offset = len(ordered_components) * x_spacing
+        
+        for key in ['reservoirs', 'stations', 'junctions', 'pipes', 'gates', 'channels']:
+            if key in topology_data:
+                for item in topology_data[key]:
+                    if isinstance(item, dict) and 'name' in item:
+                        comp_name = item['name']
+                        if comp_name not in existing_names:
+                            # 额外组件按顺序排在右侧
+                            layout['positions'][comp_name] = {
+                                'x': additional_x_offset,
+                                'y': y_base - 2.0,  # 稍微错开显示
+                                'type': key.rstrip('s')
+                            }
+                            existing_names.add(comp_name)
+                            additional_x_offset += x_spacing
             
         return layout
         
@@ -478,5 +858,31 @@ class EnhancedTopologyGenerator:
         
     def _get_edge_data(self, source: str, target: str, topology_data: Dict) -> dict:
         """获取边数据"""
-        # 简化实现，在实际项目中可以根据需要扩展
-        return {'flow': 0.0}
+        # 查找连接对应的实际流量数据
+        edge_data = {'flow': 0.0}
+        
+        # 从results或其他数据源获取真实的流量值
+        if hasattr(topology_data, 'get') and 'results' in topology_data:
+            results = topology_data['results']
+            # 查找连接的流量数据
+            connection_key = f"{source}->{target}"
+            if connection_key in results:
+                flow_value = results[connection_key].get('flow', 0.0)
+                if flow_value != 0.0:
+                    edge_data['flow'] = flow_value
+        
+        # 检查节点自身的流量数据
+        source_data = self._get_node_data(source, topology_data)
+        target_data = self._get_node_data(target, topology_data)
+        
+        # 从源节点获取流量数据
+        if source_data and 'flow_rate' in source_data:
+            edge_data['flow'] = source_data['flow_rate']
+        elif target_data and 'flow_rate' in target_data:
+            edge_data['flow'] = target_data['flow_rate']
+        elif source_data and 'current_flow' in source_data:
+            edge_data['flow'] = source_data['current_flow']
+        elif target_data and 'current_flow' in target_data:
+            edge_data['flow'] = target_data['current_flow']
+            
+        return edge_data

@@ -1,0 +1,16 @@
+{
+  "visualization_type": "comparison",
+  "timestamp": "20251007_162112",
+  "data_points": 100,
+  "parameters": {
+    "flow_range": [
+      80,
+      200
+    ],
+    "level_range": [
+      8.0,
+      9.5
+    ],
+    "time_span": "8 hours"
+  }
+}

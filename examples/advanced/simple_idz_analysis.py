@@ -168,7 +168,7 @@ def plot_idz_results(df):
         ax4.grid(True, alpha=0.3, axis='y')
         
         plt.tight_layout()
-        plt.savefig(f"{scenario}_3参数IDZ辨识结果.png", dpi=300, bbox_inches='tight')
+        plt.savefig(f"{scenario}_3参数IDZ辨识结果.svg", dpi=300, bbox_inches='tight')
         plt.show()
 
 def main():

@@ -330,7 +330,7 @@ def main():
                 all_models[scenario] = scenario_models
                 
                 # 绘制辨识结果
-                save_path = f"{scenario}_IDZ模型辨识结果.png"
+                save_path = f"{scenario}_IDZ模型辨识结果.svg"
                 identifier.plot_model_identification_results(
                     scenario_models, scenario, save_path
                 )
@@ -369,7 +369,7 @@ def main():
             subplot_idx += 1
         
         plt.tight_layout()
-        plt.savefig("IDZ模型辨识精度汇总.png", dpi=300, bbox_inches='tight')
+        plt.savefig("IDZ模型辨识精度汇总.svg", dpi=300, bbox_inches='tight')
         plt.show()
         
         print(f"\n=== IDZ模型辨识完成 ===")

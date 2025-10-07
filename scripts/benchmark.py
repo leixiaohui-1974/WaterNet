@@ -575,7 +575,7 @@ class PerformanceBenchmark:
         axes[1, 1].tick_params(axis='x', rotation=45)
         
         plt.tight_layout()
-        plt.savefig(self.output_dir / 'performance_comparison.png', dpi=300, bbox_inches='tight')
+        plt.savefig(self.output_dir / 'performance_comparison.svg', dpi=300, bbox_inches='tight')
         plt.close()
     
     def _plot_stability_results(self):
@@ -616,7 +616,7 @@ class PerformanceBenchmark:
         ax.legend()
         
         plt.tight_layout()
-        plt.savefig(self.output_dir / 'stability_results.png', dpi=300, bbox_inches='tight')
+        plt.savefig(self.output_dir / 'stability_results.svg', dpi=300, bbox_inches='tight')
         plt.close()
     
     def _print_summary(self, summary):

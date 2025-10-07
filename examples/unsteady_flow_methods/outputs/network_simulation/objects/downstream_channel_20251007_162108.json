@@ -1,0 +1,16 @@
+{
+  "object_id": "downstream_channel",
+  "object_type": "channel",
+  "timestamp": "20251007_162108",
+  "properties": {
+    "elevation": 99.35,
+    "length": 2500.0,
+    "capacity": 200.0,
+    "roughness": 0.030000000000000002
+  },
+  "simulation_results": {
+    "flow_rate": 125.0,
+    "water_level": 8.5,
+    "velocity": 2.0500000000000003
+  }
+}

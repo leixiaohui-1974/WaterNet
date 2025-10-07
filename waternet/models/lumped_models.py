@@ -209,18 +209,20 @@ class BaseLumpedModel(ABC):
             return 0.0
     
     @abstractmethod
-    def step(self, Q_in: float) -> Dict[str, float]:
+    def step(self, Q_in: float, downstream_level: Optional[float] = None, **kwargs) -> Dict[str, float]:
         """
         执行一个时间步的仿真
         
         这是核心仿真方法，每个具体模型必须实现自己的算法逻辑。
         方法应该：
-        1. 根据入流Q_in和当前状态计算新状态
+        1. 根据Q_in和当前状态计算新状态
         2. 更新内部状态变量
         3. 返回当前时步的计算结果
         
         Args:
             Q_in (float): 当前时步的入流量（m³/s）
+            downstream_level (Optional[float]): 下游水位，用于非恒定流仿真兼容性
+            **kwargs: 其他兼容性参数
             
         Returns:
             Dict[str, float]: 仿真结果字典，至少包含：
@@ -615,7 +617,7 @@ class StorageRoutingModel(BaseLumpedModel):
         """
         super().__init__(dt, initial_V, V_to_H_func, H_to_Q_func, name, QH_to_V_func)
     
-    def step(self, Q_in: float) -> Dict[str, float]:
+    def step(self, Q_in: float, downstream_level: Optional[float] = None, **kwargs) -> Dict[str, float]:
         """
         蓄量演算模型的时步推进
         
@@ -624,6 +626,8 @@ class StorageRoutingModel(BaseLumpedModel):
         
         Args:
             Q_in (float): 入流量
+            downstream_level (Optional[float]): 下游水位，用于非恒定流仿真兼容性
+            **kwargs: 其他兼容性参数
             
         Returns:
             Dict[str, float]: 仿真结果
@@ -738,12 +742,14 @@ class MuskingumModel(BaseLumpedModel):
         if abs(coeff_sum - 1.0) > 1e-6:
             warnings.warn(f"马斯京干系数和不为1: {coeff_sum}")
     
-    def step(self, Q_in: float) -> Dict[str, float]:
+    def step(self, Q_in: float, downstream_level: Optional[float] = None, **kwargs) -> Dict[str, float]:
         """
         马斯京干模型的时步推进
         
         Args:
             Q_in (float): 入流量
+            downstream_level (Optional[float]): 下游水位，用于非恒定流仿真兼容性
+            **kwargs: 其他兼容性参数
             
         Returns:
             Dict[str, float]: 仿真结果

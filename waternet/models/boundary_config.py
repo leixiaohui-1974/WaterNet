@@ -21,7 +21,7 @@ Date: 2024-10-04
 """
 
 import yaml
-from typing import Dict, List, Any, Optional, Union, Callable
+from typing import Dict, List, Any, Optional, Union, Callable, Tuple
 from dataclasses import dataclass, field
 from pathlib import Path
 import logging

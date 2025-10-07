@@ -1,0 +1,219 @@
+# 水网系统配置示例
+# 演示降阶模型的不同求解策略
+
+# 系统元信息
+metadata:
+  name: "多模型水网系统示例"
+  description: "包含不同耦合强度降阶模型的复合水网"
+  version: "1.0.0"
+  created_by: "WaterNet"
+  created_date: "2024-10-05"
+
+# 水系统对象定义
+objects:
+  # 输水对象 - 采用不同降阶模型
+  channel_01:
+    type: "channel"
+    simulation_method: "muskingum"  # 弱耦合
+    length: 5000.0
+    bottom_width: 20.0
+    side_slope: 1.5
+    bottom_slope: 0.0005
+    manning_coefficient: 0.03
+    
+  channel_02:
+    type: "channel" 
+    simulation_method: "idz"  # 强耦合
+    length: 3000.0
+    bottom_width: 15.0
+    side_slope: 1.0
+    bottom_slope: 0.0008
+    manning_coefficient: 0.025
+    
+  pipe_01:
+    type: "pipe"
+    simulation_method: "storage_routing"  # 中等耦合
+    length: 1000.0
+    diameter: 2.0
+    roughness: 0.02
+    material: "concrete"
+    
+  # 存储对象
+  reservoir_01:
+    type: "reservoir"
+    simulation_method: "water_balance"  # 解耦
+    capacity: 1000000.0
+    initial_volume: 500000.0
+    surface_area: 50000.0
+    
+  # 调控对象 - 通常强耦合
+  gate_01:
+    type: "gate"
+    simulation_method: "hydraulic_control"
+    gate_width: 5.0
+    gate_height: 3.0
+    control_mode: "automatic"
+    target_water_level: 10.0
+    
+  pump_01:
+    type: "pump"
+    simulation_method: "pump_curve"
+    rated_flow: 5.0
+    rated_head: 20.0
+    efficiency: 0.85
+    control_mode: "automatic"
+    
+  # 枢纽站
+  pump_station_01:
+    type: "pump_station"
+    pumps: ["pump_01"]
+    gates: ["gate_01"]
+    control_strategy: "optimization"
+    coordination_mode: "centralized"
+
+# 对象连接关系
+connections:
+  - from: "reservoir_01"
+    to: "channel_01"
+    type: "flow"
+    
+  - from: "channel_01"
+    to: "gate_01"
+    type: "flow"
+    
+  - from: "gate_01"
+    to: "channel_02"
+    type: "flow"
+    
+  - from: "channel_02"
+    to: "pump_station_01"
+    type: "flow"
+    
+  - from: "pump_station_01"
+    to: "pipe_01"
+    type: "flow"
+
+# 求解配置
+solution:
+  # 求解策略
+  strategy: "adaptive"  # 自适应选择：adaptive/coupled_full/coupled_simplified/sequential/parallel
+  
+  # 时间步长配置
+  time_step: 60.0  # 秒
+  
+  # 联立求解参数
+  max_iterations: 50
+  tolerance: 1e-6
+  coupling_threshold: 0.1
+  
+  # 并行计算配置
+  enable_parallel: true
+  max_workers: 4
+  
+  # 求解器选项
+  solver_options:
+    matrix_solver: "sparse_lu"  # 稀疏矩阵求解器
+    preconditioner: "ilu"  # 预条件器
+    adaptive_time_step: false  # 自适应时间步长
+    min_time_step: 10.0
+    max_time_step: 300.0
+
+# 边界条件
+boundary_conditions:
+  # 上游边界
+  reservoir_01:
+    inflow_series: "data/inflow_series.csv"
+    initial_water_level: 100.0
+    
+  # 下游边界  
+  pipe_01:
+    downstream_water_level: 50.0
+    
+# 控制规则
+control_rules:
+  gate_01:
+    rule_type: "water_level_control"
+    target_level: 95.0
+    tolerance: 0.5
+    max_opening_rate: 0.1  # m/min
+    
+  pump_01:
+    rule_type: "flow_control"
+    target_flow: 3.0
+    min_suction_head: 2.0
+    
+  pump_station_01:
+    optimization_objective: "energy_minimization"
+    constraints:
+      - "water_level_limits"
+      - "flow_capacity"
+      - "equipment_limits"
+
+# 数字孪生配置
+digital_twin:
+  enabled: true
+  twin_type: "cross_scale"  # 跨尺度孪生
+  
+  # 同步配置
+  synchronization:
+    interval: 300.0  # 5分钟同步一次
+    variables: ["water_level", "flow_rate"]
+    tolerance: 0.05
+    
+  # 参数校正
+  parameter_correction:
+    enabled: true
+    correction_interval: 3600.0  # 1小时校正一次
+    measured_data_source: "data/measured_data.csv"
+    correction_variables:
+      - "manning_coefficient"
+      - "gate_discharge_coefficient"
+      - "pump_efficiency"
+    
+  # 孪生模型配置
+  twin_models:
+    detailed_model:
+      simulation_method: "saint_venant"  # 精细化模型
+      spatial_resolution: 100.0  # 100m网格
+      
+    simplified_model:
+      simulation_method: "lumped"  # 简化模型
+      lumping_strategy: "reach_based"
+
+# 输出配置  
+output:
+  # 结果保存
+  save_results: true
+  output_directory: "results/"
+  output_format: ["csv", "hdf5"]
+  
+  # 输出间隔
+  output_interval: 300.0  # 5分钟
+  
+  # 输出变量
+  variables:
+    - "water_level"
+    - "flow_rate" 
+    - "volume"
+    - "velocity"
+    - "control_position"
+    
+  # 可视化配置
+  visualization:
+    enabled: true
+    plot_types: ["time_series", "profile", "network"]
+    update_interval: 600.0  # 10分钟更新图表
+    
+# 模型验证配置
+validation:
+  enabled: true
+  reference_data: "data/validation_data.csv"
+  metrics: ["nash_sutcliffe", "rmse", "bias"]
+  validation_period: [0, 86400]  # 24小时
+  
+# 性能监控
+performance:
+  monitor_enabled: true
+  log_level: "INFO"
+  profiling_enabled: false
+  memory_limit_mb: 4096

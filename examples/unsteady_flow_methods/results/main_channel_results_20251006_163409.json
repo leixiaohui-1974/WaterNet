@@ -1,0 +1,211 @@
+{
+  "metadata": {
+    "object_id": "main_channel",
+    "export_time": "2025-10-06T16:34:09.719986",
+    "categories": [
+      "time_series",
+      "spatial_profiles",
+      "statistics",
+      "diagnostics"
+    ]
+  },
+  "time_series": {
+    "steady_flow": {
+      "data": [
+        {
+          "time": 1759739631.570396,
+          "Q_in": 100.0,
+          "Q_out": 100.0,
+          "H_level": 96.51540643314398,
+          "V_storage": 1811471.4637069996
+        },
+        {
+          "time": 1759739634.332733,
+          "Q_in": 100.0,
+          "Q_out": 100.0,
+          "H_level": 96.51540643314398,
+          "V_storage": 1811471.4637069996
+        },
+        {
+          "time": 1759739634.3343549,
+          "Q_in": 100.0,
+          "Q_out": 100.0,
+          "H_level": 96.51540643314398,
+          "V_storage": 1811471.4637069996
+        },
+        {
+          "time": 1759739646.2283692,
+          "Q_in": 100.0,
+          "Q_out": 100.0,
+          "H_level": 96.51540643314398,
+          "V_storage": 1811471.4637069996
+        }
+      ],
+      "metadata": {
+        "description": "恒定流计算结果（使用统一水力学方法）",
+        "calculation_type": "steady_flow",
+        "method": "hydraulic_equilibrium",
+        "units": {
+          "Q_in": "m3/s",
+          "Q_out": "m3/s",
+          "H_level": "m",
+          "V_storage": "m3"
+        }
+      }
+    }
+  },
+  "spatial_profiles": {},
+  "statistics": {
+    "sections_detailed_results": {
+      "total_sections": 3,
+      "calculation_time": 1759739646.2283692,
+      "upstream_flow": 100.0,
+      "downstream_level": 96.0,
+      "total_storage_m3": 1811471.4637069996,
+      "sections_details": [
+        {
+          "water_level": 97.03081286628796,
+          "water_depth": 11.03081286628796,
+          "flow_rate": 100.0,
+          "velocity": 0.31757322922862824,
+          "froude_number": 0.030528511033099587,
+          "flow_regime": "subcritical",
+          "cross_area": 314.8880031320515,
+          "wetted_perimeter": 51.77216139944913,
+          "hydraulic_radius": 6.082187697409944,
+          "top_width": 45.09243859886388,
+          "bed_elevation": 86.0,
+          "station": 0.0,
+          "elevation": 86.0,
+          "section_index": 0
+        },
+        {
+          "water_level": 96.51342320090188,
+          "water_depth": 11.013423200901883,
+          "flow_rate": 100.0,
+          "velocity": 0.28806441071819927,
+          "froude_number": 0.027713663445237593,
+          "flow_regime": "subcritical",
+          "cross_area": 347.1445839167741,
+          "wetted_perimeter": 54.70946206923647,
+          "hydraulic_radius": 6.345238479542207,
+          "top_width": 48.04026960270565,
+          "bed_elevation": 85.5,
+          "station": 2500.0,
+          "elevation": 85.5,
+          "section_index": 1
+        },
+        {
+          "water_level": 96.0,
+          "water_depth": 11.0,
+          "flow_rate": 100.0,
+          "velocity": 0.22727272727272727,
+          "froude_number": 0.021878446297648017,
+          "flow_regime": "subcritical",
+          "cross_area": 440.0,
+          "wetted_perimeter": 67.19349550499538,
+          "hydraulic_radius": 6.54825287318605,
+          "top_width": 62.0,
+          "bed_elevation": 85.0,
+          "station": 5000.0,
+          "elevation": 85.0,
+          "section_index": 2
+        }
+      ]
+    },
+    "water_surface_profile": {
+      "profile_points": 3,
+      "profile_data": [
+        {
+          "station": 0.0,
+          "bed_elevation": 86.0,
+          "water_level": 97.03081286628796,
+          "water_depth": 11.03081286628796,
+          "velocity": 0.31757322922862824,
+          "froude_number": 0.030528511033099587,
+          "flow_regime": "subcritical"
+        },
+        {
+          "station": 2500.0,
+          "bed_elevation": 85.5,
+          "water_level": 96.51342320090188,
+          "water_depth": 11.013423200901883,
+          "velocity": 0.28806441071819927,
+          "froude_number": 0.027713663445237593,
+          "flow_regime": "subcritical"
+        },
+        {
+          "station": 5000.0,
+          "bed_elevation": 85.0,
+          "water_level": 96.0,
+          "water_depth": 11.0,
+          "velocity": 0.22727272727272727,
+          "froude_number": 0.021878446297648017,
+          "flow_regime": "subcritical"
+        }
+      ],
+      "calculation_time": 1759739646.2283692
+    }
+  },
+  "diagnostics": {
+    "steady_flow_sections": {
+      "description": "恒定流计算的断面详细结果",
+      "sections_count": 3,
+      "sections_data": [
+        {
+          "water_level": 97.03081286628796,
+          "water_depth": 11.03081286628796,
+          "flow_rate": 100.0,
+          "velocity": 0.31757322922862824,
+          "froude_number": 0.030528511033099587,
+          "flow_regime": "subcritical",
+          "cross_area": 314.8880031320515,
+          "wetted_perimeter": 51.77216139944913,
+          "hydraulic_radius": 6.082187697409944,
+          "top_width": 45.09243859886388,
+          "bed_elevation": 86.0,
+          "station": 0.0,
+          "elevation": 86.0,
+          "section_index": 0
+        },
+        {
+          "water_level": 96.51342320090188,
+          "water_depth": 11.013423200901883,
+          "flow_rate": 100.0,
+          "velocity": 0.28806441071819927,
+          "froude_number": 0.027713663445237593,
+          "flow_regime": "subcritical",
+          "cross_area": 347.1445839167741,
+          "wetted_perimeter": 54.70946206923647,
+          "hydraulic_radius": 6.345238479542207,
+          "top_width": 48.04026960270565,
+          "bed_elevation": 85.5,
+          "station": 2500.0,
+          "elevation": 85.5,
+          "section_index": 1
+        },
+        {
+          "water_level": 96.0,
+          "water_depth": 11.0,
+          "flow_rate": 100.0,
+          "velocity": 0.22727272727272727,
+          "froude_number": 0.021878446297648017,
+          "flow_regime": "subcritical",
+          "cross_area": 440.0,
+          "wetted_perimeter": 67.19349550499538,
+          "hydraulic_radius": 6.54825287318605,
+          "top_width": 62.0,
+          "bed_elevation": 85.0,
+          "station": 5000.0,
+          "elevation": 85.0,
+          "section_index": 2
+        }
+      ],
+      "calculation_method": "hydraulic_equilibrium",
+      "boundary_conditions": {
+        "upstream_flow": 100.0,
+        "downstream_level": 96.0
+      }
+    }
+  }
+}

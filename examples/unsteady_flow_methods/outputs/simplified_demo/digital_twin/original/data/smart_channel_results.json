@@ -1,0 +1,330 @@
+{
+  "metadata": {
+    "object_id": "smart_channel",
+    "export_time": "2025-10-07T16:21:08.000807",
+    "categories": [
+      "time_series",
+      "spatial_profiles",
+      "statistics",
+      "diagnostics"
+    ]
+  },
+  "time_series": {
+    "steady_flow": {
+      "data": [
+        {
+          "time": 1759825253.0487363,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 96.3168583848513,
+          "V_storage": 876680.3720621803
+        },
+        {
+          "time": 1759825253.0510182,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.9010344,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.9029949,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.25500083140302,
+          "V_storage": 20146575.40182825
+        },
+        {
+          "time": 1759825253.9046502,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.27750083269927,
+          "V_storage": 20146575.40227935
+        },
+        {
+          "time": 1759825253.9063914,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.9082115,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.32250083529897,
+          "V_storage": 20146575.403184045
+        },
+        {
+          "time": 1759825253.9099138,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.34500083660242,
+          "V_storage": 20146575.403637648
+        },
+        {
+          "time": 1759825253.9110696,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.9119754,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.913141,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.9141307,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.914976,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.9160259,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.916989,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.9178827,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.9188828,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825253.9200675,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825259.7200236,
+          "Q_in": 100.0,
+          "Q_out": 100.0,
+          "H_level": 99.30395908746537,
+          "V_storage": 1302617.9229021939
+        },
+        {
+          "time": 1759825259.9995496,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        },
+        {
+          "time": 1759825264.0400124,
+          "Q_in": 120.0,
+          "Q_out": 120.0,
+          "H_level": 84.30000083399793,
+          "V_storage": 20146575.40273129
+        }
+      ],
+      "metadata": {
+        "description": "恒定流计算结果（使用统一水力学方法）",
+        "calculation_type": "steady_flow",
+        "method": "hydraulic_equilibrium",
+        "units": {
+          "Q_in": "m3/s",
+          "Q_out": "m3/s",
+          "H_level": "m",
+          "V_storage": "m3"
+        }
+      }
+    }
+  },
+  "spatial_profiles": {},
+  "statistics": {
+    "sections_detailed_results": {
+      "total_sections": 3,
+      "calculation_time": 1759825264.0400124,
+      "upstream_flow": 120.0,
+      "downstream_level": 9.0,
+      "total_storage_m3": 20146575.40273129,
+      "sections_details": [
+        {
+          "water_level": 159.60000166799585,
+          "water_depth": 74.00000166799586,
+          "flow_rate": 120.0,
+          "velocity": 0.013401831004447829,
+          "froude_number": 0.000497409148611633,
+          "flow_regime": "subcritical",
+          "cross_area": 8954.000386975044,
+          "wetted_perimeter": 276.8108003983798,
+          "hydraulic_radius": 32.34700515329839,
+          "top_width": 232.00000500398758,
+          "bed_elevation": 85.6,
+          "station": 0.0,
+          "elevation": 85.6,
+          "section_index": 0
+        },
+        {
+          "water_level": 159.3,
+          "water_depth": 74.00000000000001,
+          "flow_rate": 120.0,
+          "velocity": 0.01340183158364976,
+          "froude_number": 0.0004974091757146426,
+          "flow_regime": "subcritical",
+          "cross_area": 8954.000000000004,
+          "wetted_perimeter": 276.8107943843352,
+          "hydraulic_radius": 32.34700445809895,
+          "top_width": 232.00000000000006,
+          "bed_elevation": 85.3,
+          "station": 1500.0,
+          "elevation": 85.3,
+          "section_index": 1
+        },
+        {
+          "water_level": 9.0,
+          "water_depth": 0.01,
+          "flow_rate": 120.0,
+          "velocity": 1198.2026959560658,
+          "froude_number": 3825.5667906985573,
+          "flow_regime": "supercritical",
+          "cross_area": 0.10015,
+          "wetted_perimeter": 10.03605551275464,
+          "hydraulic_radius": 0.009979020131237935,
+          "top_width": 10.03,
+          "bed_elevation": 85.0,
+          "station": 3000.0,
+          "elevation": 85.0,
+          "section_index": 2
+        }
+      ]
+    },
+    "water_surface_profile": {
+      "profile_points": 3,
+      "profile_data": [
+        {
+          "station": 0.0,
+          "bed_elevation": 85.6,
+          "water_level": 159.60000166799585,
+          "water_depth": 74.00000166799586,
+          "velocity": 0.013401831004447829,
+          "froude_number": 0.000497409148611633,
+          "flow_regime": "subcritical"
+        },
+        {
+          "station": 1500.0,
+          "bed_elevation": 85.3,
+          "water_level": 159.3,
+          "water_depth": 74.00000000000001,
+          "velocity": 0.01340183158364976,
+          "froude_number": 0.0004974091757146426,
+          "flow_regime": "subcritical"
+        },
+        {
+          "station": 3000.0,
+          "bed_elevation": 85.0,
+          "water_level": 9.0,
+          "water_depth": 0.01,
+          "velocity": 1198.2026959560658,
+          "froude_number": 3825.5667906985573,
+          "flow_regime": "supercritical"
+        }
+      ],
+      "calculation_time": 1759825264.0400124
+    }
+  },
+  "diagnostics": {
+    "steady_flow_sections": {
+      "description": "恒定流计算的断面详细结果",
+      "sections_count": 3,
+      "sections_data": [
+        {
+          "water_level": 159.60000166799585,
+          "water_depth": 74.00000166799586,
+          "flow_rate": 120.0,
+          "velocity": 0.013401831004447829,
+          "froude_number": 0.000497409148611633,
+          "flow_regime": "subcritical",
+          "cross_area": 8954.000386975044,
+          "wetted_perimeter": 276.8108003983798,
+          "hydraulic_radius": 32.34700515329839,
+          "top_width": 232.00000500398758,
+          "bed_elevation": 85.6,
+          "station": 0.0,
+          "elevation": 85.6,
+          "section_index": 0
+        },
+        {
+          "water_level": 159.3,
+          "water_depth": 74.00000000000001,
+          "flow_rate": 120.0,
+          "velocity": 0.01340183158364976,
+          "froude_number": 0.0004974091757146426,
+          "flow_regime": "subcritical",
+          "cross_area": 8954.000000000004,
+          "wetted_perimeter": 276.8107943843352,
+          "hydraulic_radius": 32.34700445809895,
+          "top_width": 232.00000000000006,
+          "bed_elevation": 85.3,
+          "station": 1500.0,
+          "elevation": 85.3,
+          "section_index": 1
+        },
+        {
+          "water_level": 9.0,
+          "water_depth": 0.01,
+          "flow_rate": 120.0,
+          "velocity": 1198.2026959560658,
+          "froude_number": 3825.5667906985573,
+          "flow_regime": "supercritical",
+          "cross_area": 0.10015,
+          "wetted_perimeter": 10.03605551275464,
+          "hydraulic_radius": 0.009979020131237935,
+          "top_width": 10.03,
+          "bed_elevation": 85.0,
+          "station": 3000.0,
+          "elevation": 85.0,
+          "section_index": 2
+        }
+      ],
+      "calculation_method": "hydraulic_equilibrium",
+      "boundary_conditions": {
+        "upstream_flow": 120.0,
+        "downstream_level": 9.0
+      }
+    }
+  }
+}

@@ -515,7 +515,7 @@ def plot_initial_steady_state(sections, solver):
     plt.tight_layout()
     
     # 保存图片
-    output_file = Path(__file__).parent / '初始稳态水力学参数分布.png'
+    output_file = Path(__file__).parent / '初始稳态水力学参数分布.svg'
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"✅ 初始稳态分布图已保存: {output_file}")
     
@@ -597,7 +597,7 @@ def plot_initial_steady_state(sections, solver):
     plt.tight_layout()
     
     # 保存图片
-    output_file = Path(__file__).parent / '非恒定流阶跃响应时间序列.png'
+    output_file = Path(__file__).parent / '非恒定流阶跃响应时间序列.svg'
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"✅ 时间序列图已保存: {output_file}")
     

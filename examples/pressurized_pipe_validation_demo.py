@@ -836,7 +836,7 @@ def generate_comprehensive_visualization():
         plt.tight_layout()
         
         # 保存图表
-        output_path = project_root / "examples" / "pressurized_pipe_validation_results.png"
+        output_path = project_root / "examples" / "pressurized_pipe_validation_results.svg"
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
         print(f"   ✅ 综合分析图表已保存: {output_path}")
         

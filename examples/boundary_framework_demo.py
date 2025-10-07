@@ -181,10 +181,10 @@ def demo_control_signals():
     plt.legend()
     
     plt.tight_layout()
-    plt.savefig('control_signals_demo.png', dpi=300, bbox_inches='tight')
+    plt.savefig('control_signals_demo.svg', dpi=300, bbox_inches='tight')
     plt.show()
     
-    logger.info("控制信号演化图已保存为 control_signals_demo.png")
+    logger.info("控制信号演化图已保存为 control_signals_demo.svg")
     
     return control_history
 
@@ -410,10 +410,10 @@ def demo_advanced_features():
     plt.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('adaptive_timestep_demo.png', dpi=300, bbox_inches='tight')
+    plt.savefig('adaptive_timestep_demo.svg', dpi=300, bbox_inches='tight')
     plt.show()
     
-    logger.info("自适应时间步演化图已保存为 adaptive_timestep_demo.png")
+    logger.info("自适应时间步演化图已保存为 adaptive_timestep_demo.svg")
 
 
 def demo_performance_comparison():
@@ -478,10 +478,10 @@ def demo_performance_comparison():
     plt.legend()
     
     plt.tight_layout()
-    plt.savefig('performance_comparison.png', dpi=300, bbox_inches='tight')
+    plt.savefig('performance_comparison.svg', dpi=300, bbox_inches='tight')
     plt.show()
     
-    logger.info("性能对比图已保存为 performance_comparison.png")
+    logger.info("性能对比图已保存为 performance_comparison.svg")
     
     return {
         'scales': scales,
@@ -518,9 +518,9 @@ def main():
         logger.info("=" * 60)
         logger.info("✅ 所有演示完成！")
         logger.info("📊 生成的文件:")
-        logger.info("  - control_signals_demo.png: 控制信号演化图")
-        logger.info("  - adaptive_timestep_demo.png: 自适应时间步演化图")
-        logger.info("  - performance_comparison.png: 性能对比图")
+        logger.info("  - control_signals_demo.svg: 控制信号演化图")
+        logger.info("  - adaptive_timestep_demo.svg: 自适应时间步演化图")
+        logger.info("  - performance_comparison.svg: 性能对比图")
         logger.info("  - demo_boundary_config.yaml: 配置模板文件")
         
     except Exception as e:

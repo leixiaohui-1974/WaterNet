@@ -199,7 +199,7 @@ def plot_results(results_df: pd.DataFrame, Q_in_series: np.ndarray,
         output_dir = Path(__file__).parent / 'outputs'
         output_dir.mkdir(exist_ok=True)
         
-        plot_file = output_dir / 'simulation_results.png'
+        plot_file = output_dir / 'simulation_results.svg'
         plt.savefig(plot_file, dpi=300, bbox_inches='tight')
         print(f"✅ 结果图表已保存: {plot_file}")
         
@@ -549,7 +549,7 @@ def plot_results(results):
         plt.tight_layout()
         
         # 保存图表
-        output_file = '/data/workspace/WaterNet/examples/simulation_results.png'
+        output_file = '/data/workspace/WaterNet/examples/simulation_results.svg'
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         print(f"✅ 结果图表已保存: {output_file}")
         

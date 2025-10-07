@@ -1,0 +1,16 @@
+{
+  "object_id": "junction_1",
+  "object_type": "junction",
+  "timestamp": "20251007_162108",
+  "properties": {
+    "elevation": 98.7,
+    "length": 0,
+    "capacity": 200.0,
+    "roughness": 0.035
+  },
+  "simulation_results": {
+    "flow_rate": 130.0,
+    "water_level": 8.4,
+    "velocity": 2.0
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "analysis_id": 3,
+  "froude_number": 0.9,
+  "reynolds_number": 130000,
+  "water_surface_elevation": [
+    8.799999999999999,
+    8.7
+  ],
+  "flow_velocity": [
+    2.3000000000000003,
+    2.2
+  ]
+}

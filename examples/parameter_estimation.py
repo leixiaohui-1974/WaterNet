@@ -307,9 +307,9 @@ def plot_optimization_results(optimization_results, initial_results,
         
         plt.tight_layout()
         
-        plot_file = output_dir / 'parameter_optimization.png'
-        plt.savefig(plot_file, dpi=300, bbox_inches='tight')
-        print(f"✅ 优化结果图表已保存: {plot_file}")
+        plot_file = output_dir / 'parameter_optimization.svg'
+        plt.savefig(plot_file, format='svg', bbox_inches='tight')
+        print(f"✅ 优化结果图表已保存 (SVG): {plot_file}")
         
         plt.close()
         

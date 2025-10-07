@@ -379,7 +379,7 @@ class SimplifiedSaintVenantModel(SaintVenantModel):
                     water_levels[i] = H_up
         
         # 计算总蓄水量
-        total_volume = self._calculate_total_volume(water_levels, Q)
+        total_volume = self._calculate_total_volume_from_levels(water_levels, Q)
         
         # 构建结果字典
         result = {'total_volume': total_volume}
@@ -592,7 +592,7 @@ class SimplifiedSaintVenantModel(SaintVenantModel):
                 water_levels[i] = self._estimate_kinematic_level(i, Q, water_levels, total_slope)
         
         # 计算总蓄水量
-        total_volume = self._calculate_total_volume(water_levels, Q)
+        total_volume = self._calculate_total_volume_from_levels(water_levels, Q)
         
         # 构建结果字典
         result = {'total_volume': total_volume}
@@ -810,7 +810,7 @@ class SimplifiedSaintVenantModel(SaintVenantModel):
                 water_levels[i] = self._estimate_upstream_level_simple(i, water_levels)
         
         # 计算总蓄水量
-        total_volume = self._calculate_total_volume(water_levels, Q)
+        total_volume = self._calculate_total_volume_from_levels(water_levels, Q)
         
         # 构建结果字典
         result = {'total_volume': total_volume}
@@ -988,6 +988,176 @@ class SimplifiedSaintVenantModel(SaintVenantModel):
             
         except Exception as e:
             return {'error': f"对比分析失败: {e}"}
+    
+    def step(self, Q_in: float, **kwargs) -> Dict[str, float]:
+        """
+        执行一个时间步的简化非恒定流仿真
+        
+        根据当前简化模式，实现真正的非恒定流时间步进，
+        提供延迟和坦化效应，而不是简单的恒定流近似。
+        
+        Args:
+            Q_in (float): 入流量 (m³/s)
+            **kwargs: 额外参数
+                - downstream_level (float): 下游水位 (m)
+                - dt (float): 时间步长 (s)
+            
+        Returns:
+            Dict[str, float]: 下一时刻的状态
+        """
+        try:
+            # 获取参数
+            H_down = kwargs.get('downstream_level', 96.0)
+            dt = kwargs.get('dt', 60.0)  # 默认1分钟时间步
+            
+            # 初始化状态历史（如果尚未初始化）
+            if not hasattr(self, '_state_history'):
+                self._initialize_unsteady_state(Q_in, H_down, dt)
+            
+            # 根据简化模式执行不同的时间步进方法
+            if self.approximation_mode == ApproximationMode.DYNAMIC_WAVE:
+                # 动力波模式：使用基类的完整圣维南求解器
+                return super().step(Q_in, downstream_level=H_down, dt=dt)
+            else:
+                # 简化模式：使用专门的时间步进方法
+                return self._simplified_time_step(Q_in, H_down, dt)
+                
+        except Exception as e:
+            print(f"简化圣维南模型 step 方法异常: {e}")
+            return self._fallback_to_steady_flow(Q_in, H_down)
+    
+    def _initialize_unsteady_state(self, Q_in: float, H_down: float, dt: float):
+        """初始化非恒定流状态历史"""
+        # 使用恒定流结果作为初始条件
+        initial_result = self.compute_with_approximation(Q_in, H_down)
+        
+        if initial_result['success']:
+            hydraulic_results = initial_result['hydraulic_results']
+            
+            # 初始化状态历史
+            self._state_history = {
+                'time': [0.0],
+                'Q_in': [Q_in],
+                'Q_out': [Q_in],  # 初始时刻假设出流=入流
+                'H_up': [hydraulic_results.get('H_section_0', H_down + 1.0)],
+                'H_down': [H_down],
+                'storage': [hydraulic_results.get('total_volume', 1000000.0)]
+            }
+            
+            # 各简化模式的特征参数
+            self._mode_characteristics = self._get_mode_characteristics()
+            
+            print(f"简化圣维南模型状态初始化完成: 模式={self.approximation_mode.value}")
+        else:
+            raise RuntimeError("初始状态计算失败")
+    
+    def _get_mode_characteristics(self) -> Dict[str, float]:
+        """获取各简化模式的特征参数"""
+        # 计算河道特征参数
+        total_length = sum(seg['length'] for seg in self.segments) if self.segments else 1000.0
+        avg_slope = self._calculate_channel_slope()
+        avg_roughness = np.mean([sec['roughness'] for sec in self.sections])
+        
+        # 估算特征流速
+        typical_depth = 2.0  # 假设典型水深2m
+        typical_area = 100.0  # 假设典型断面面积100m²
+        typical_velocity = 50.0 / typical_area  # 假设50m³/s流量
+        
+        # 根据模式计算特征参数
+        if self.approximation_mode == ApproximationMode.KINEMATIC_WAVE:
+            # 运动波：传播速度 = (5/3) * V
+            wave_speed = (5.0/3.0) * typical_velocity
+            travel_time = total_length / wave_speed if wave_speed > 0 else 3600.0
+            attenuation_factor = 0.95  # 轻微衰减
+            
+        elif self.approximation_mode == ApproximationMode.DIFFUSIVE_WAVE:
+            # 扩散波：考虑扩散效应
+            wave_speed = typical_velocity * 1.67  # Seddon公式近似
+            travel_time = total_length / wave_speed if wave_speed > 0 else 1800.0
+            attenuation_factor = 0.8  # 中等衰减
+            
+        elif self.approximation_mode == ApproximationMode.QUASI_STATIC:
+            # 准静态波：介于扩散波和动力波之间
+            wave_speed = typical_velocity * 1.2
+            travel_time = total_length / wave_speed if wave_speed > 0 else 1200.0
+            attenuation_factor = 0.85  # 中等偏小衰减
+            
+        else:  # dynamic_wave
+            wave_speed = np.sqrt(9.81 * typical_depth)  # 浅水波速
+            travel_time = total_length / wave_speed if wave_speed > 0 else 600.0
+            attenuation_factor = 0.9  # 小衰减
+        
+        return {
+            'travel_time': max(travel_time, 300.0),  # 最小5分钟传播时间
+            'wave_speed': max(wave_speed, 0.1),
+            'attenuation_factor': attenuation_factor,
+            'diffusion_coeff': total_length * wave_speed * 0.1  # 扩散系数
+        }
+    
+    def _simplified_time_step(self, Q_in: float, H_down: float, dt: float) -> Dict[str, float]:
+        """简化模式的时间步进计算"""
+        history = self._state_history
+        characteristics = self._mode_characteristics
+        
+        # 获取前一时刻的状态
+        prev_Q_out = history['Q_out'][-1]
+        prev_H_up = history['H_up'][-1]
+        prev_storage = history['storage'][-1]
+        
+        # 计算延迟和坦化效应
+        travel_time = characteristics['travel_time']
+        attenuation = characteristics['attenuation_factor']
+        
+        # 一阶延迟系统近似：dQ_out/dt = (Q_target - Q_out) / T
+        # 其中 Q_target 为经过衰减的入流
+        Q_target = Q_in * attenuation
+        time_constant = travel_time / 3.0  # 调节时间常数
+        
+        # 计算出流的变化
+        dQ_dt = (Q_target - prev_Q_out) / time_constant
+        Q_out_new = prev_Q_out + dQ_dt * dt
+        
+        # 应用物理约束
+        Q_out_new = max(Q_out_new, 0.1)  # 防止负流量
+        Q_out_new = min(Q_out_new, Q_in * 1.1)  # 防止出流大于入流太多
+        
+        # 计算水位响应
+        # 基于连续性方程：dV/dt = Q_in - Q_out
+        dV_dt = Q_in - Q_out_new
+        storage_new = prev_storage + dV_dt * dt
+        storage_new = max(storage_new, prev_storage * 0.8)  # 防止蓄水量过度减少
+        
+        # 基于新蓄水量估算上游水位
+        storage_change_ratio = storage_new / prev_storage if prev_storage > 0 else 1.0
+        H_up_new = prev_H_up + (storage_change_ratio - 1.0) * 0.5  # 水位响应系数
+        
+        # 应用水位约束
+        min_H_up = self.sections[0]['elevation'] + 0.1
+        max_H_up = min_H_up + 10.0  # 最大水深10m
+        H_up_new = np.clip(H_up_new, min_H_up, max_H_up)
+        
+        # 更新状态历史
+        current_time = history['time'][-1] + dt
+        history['time'].append(current_time)
+        history['Q_in'].append(Q_in)
+        history['Q_out'].append(Q_out_new)
+        history['H_up'].append(H_up_new)
+        history['H_down'].append(H_down)
+        history['storage'].append(storage_new)
+        
+        # 限制历史长度
+        max_history = 100
+        if len(history['time']) > max_history:
+            for key in history:
+                history[key] = history[key][-max_history:]
+        
+        print(f"简化圣维南模型: {self.approximation_mode.value}, Q_in={Q_in:.2f}, Q_out={Q_out_new:.2f}, 延迟={travel_time:.0f}s")
+        
+        return {
+            'Q_out': Q_out_new,
+            'H_out': H_up_new,
+            'V': storage_new
+        }
     
     def _record_performance_metrics(self, mode: str, computation_time: float, 
                                   result: Dict[str, float]):

@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "optimal_params": {
+    "K": 795.8509682626927,
+    "x": 0.050000089076872895
+  },
+  "objective_value": 10.828662550710145,
+  "iterations": 34,
+  "convergence_info": {
+    "message": "Optimization terminated successfully.",
+    "status": true
+  },
+  "parameter_sensitivity": {
+    "K": 1.087262278955754e-06,
+    "x": 4.64988081703612
+  },
+  "physical_constraints_satisfied": true,
+  "stability_analysis": {
+    "stability_condition_value": 79.58523861010036,
+    "time_step": 1800.0,
+    "stability_margin": 1720.4147613898997,
+    "is_stable": true,
+    "stability_ratio": 0.044214021450055756,
+    "recommended_dt_min": 79.58523861010036,
+    "recommendations": [
+      "满足稳定性条件",
+      "K值偏小，可能导致响应过于灵敏",
+      "x值偏小，调节作用较弱"
+    ]
+  }
+}
