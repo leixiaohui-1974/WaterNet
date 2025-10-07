@@ -1,0 +1,17 @@
+{
+  "class_name": "WaterObject_3",
+  "object_id": "obj_3",
+  "timestamp": "20251007_162108",
+  "properties": {
+    "flow_capacity": 140.0,
+    "efficiency": 0.95,
+    "status": "active",
+    "response_time": 0.7999999999999999
+  },
+  "methods": [
+    "calculate_flow",
+    "update_state",
+    "generate_report",
+    "optimize_parameters"
+  ]
+}

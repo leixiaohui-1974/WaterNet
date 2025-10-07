@@ -1,0 +1,260 @@
+{
+  "basic_info": {
+    "object_id": "demo_channel",
+    "channel_length": "5000.0 m",
+    "channel_slope": "0.0003 (0.3‰)",
+    "roughness_coefficient": "0.030",
+    "bottom_width": "15.0 m",
+    "side_slope": "2.0",
+    "simulation_method": "SAINT_VENANT_FULL",
+    "cross_sections_count": 3,
+    "channel_type": "梯形断面明渠",
+    "design_standard": "工程级别",
+    "modeling_approach": "基于圣维南方程的一维水动力学模型"
+  },
+  "hydraulic_analysis": {
+    "calculation_success": true,
+    "design_flow_capacity": "120.0 m³/s",
+    "normal_water_level": "98.50 m",
+    "storage_capacity": "104430452 m³",
+    "total_head_loss": "0.000 m",
+    "inflow_rate": "120.0 m³/s",
+    "outflow_rate": "120.0 m³/s",
+    "average_velocity": "未计算",
+    "froude_number": "未计算",
+    "hydraulic_efficiency": "excellent",
+    "flow_regime": "subcritical",
+    "mass_balance_check": "入流-出流 = 0.000 m³/s (balanced)",
+    "energy_balance_analysis": "水头损失率: 0.00 mm·s/m³",
+    "performance_rating": "设计指标合格",
+    "technical_notes": "基于SAINT_VENANT_FULL模型的水力计算结果"
+  },
+  "steady_flow_profile": {
+    "sections_count": 3,
+    "upstream_flow": 120.0,
+    "downstream_level": 98.5,
+    "profile_length": 5000.0
+  },
+  "sensitivity_analysis": {
+    "base_scenario": {
+      "head_loss": 0.0,
+      "water_level": 98.5,
+      "boundary_conditions": {
+        "upstream": {
+          "flow": 120.0
+        },
+        "downstream": {
+          "level": 98.5
+        }
+      }
+    },
+    "sensitivity_ranking": [
+      [
+        "slope",
+        0.0
+      ],
+      [
+        "roughness",
+        0.0
+      ],
+      [
+        "bottom_width",
+        0.0
+      ]
+    ],
+    "detailed_results": {
+      "slope": {
+        "base_value": 0.0003,
+        "sensitivity_coefficient": 0.0,
+        "scenario_results": [
+          {
+            "variation_percent": -15.0,
+            "parameter_value": 0.00025499999999999996,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": -7.5,
+            "parameter_value": 0.00027749999999999997,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": 0.0,
+            "parameter_value": 0.0003,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": 7.499999999999998,
+            "parameter_value": 0.0003225,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": 15.0,
+            "parameter_value": 0.00034499999999999993,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          }
+        ],
+        "max_head_loss_change": 0,
+        "min_head_loss_change": 0
+      },
+      "roughness": {
+        "base_value": 0.03,
+        "sensitivity_coefficient": 0.0,
+        "scenario_results": [
+          {
+            "variation_percent": -15.0,
+            "parameter_value": 0.0255,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": -7.5,
+            "parameter_value": 0.02775,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": 0.0,
+            "parameter_value": 0.03,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": 7.499999999999998,
+            "parameter_value": 0.03225,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": 15.0,
+            "parameter_value": 0.034499999999999996,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          }
+        ],
+        "max_head_loss_change": 0,
+        "min_head_loss_change": 0
+      },
+      "bottom_width": {
+        "base_value": 15.0,
+        "sensitivity_coefficient": 0.0,
+        "scenario_results": [
+          {
+            "variation_percent": -15.0,
+            "parameter_value": 12.75,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": -7.5,
+            "parameter_value": 13.875,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": 0.0,
+            "parameter_value": 15.0,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": 7.499999999999998,
+            "parameter_value": 16.125,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          },
+          {
+            "variation_percent": 15.0,
+            "parameter_value": 17.25,
+            "head_loss": 0.0,
+            "water_level": 98.5,
+            "head_loss_change_percent": 0,
+            "water_level_change": 0.0,
+            "calculation_method": "computed"
+          }
+        ],
+        "max_head_loss_change": 0,
+        "min_head_loss_change": 0
+      }
+    },
+    "analysis_parameters": {
+      "variation_range_percent": 15.0,
+      "scenario_count": 5,
+      "parameters_analyzed": [
+        "slope",
+        "roughness",
+        "bottom_width"
+      ]
+    }
+  },
+  "water_surface_profiles": {
+    "success": true,
+    "report_path": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\outputs\\refactored_reports\\comprehensive\\plots\\profiles\\analysis_report.md",
+    "output_dir": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\outputs\\refactored_reports\\comprehensive\\plots\\profiles",
+    "flow": 120.0,
+    "longitudinal_plot_path": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\outputs\\refactored_reports\\comprehensive\\plots\\profiles\\flow_comparison.svg",
+    "cross_section_plot_path": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\outputs\\refactored_reports\\comprehensive\\plots\\profiles\\cross_sections_optimized_Q120.svg",
+    "channel_object": "demo_channel",
+    "results_count": 1
+  },
+  "flow_comparisons": {
+    "success": true,
+    "report_path": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\outputs\\refactored_reports\\comprehensive\\plots\\comparisons\\analysis_report.md",
+    "output_dir": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\outputs\\refactored_reports\\comprehensive\\plots\\comparisons",
+    "scenarios_count": 3,
+    "total_results": 3,
+    "channel_object": "demo_channel",
+    "flow_range": "80.0 - 160.0 m³/s",
+    "level_range": "下游水位: 自动计算边界条件"
+  },
+  "unsteady_simulation": {
+    "success": false,
+    "error": "'time_steps'"
+  }
+}

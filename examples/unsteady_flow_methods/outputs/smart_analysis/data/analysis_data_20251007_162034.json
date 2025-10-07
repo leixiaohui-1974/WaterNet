@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "timestamp": "2025-10-07T16:20:34.581464",
+    "analyzer_version": "1.0.0",
+    "methods_count": 3
+  },
+  "time_series": [
+    {
+      "t_index": 0,
+      "inflow": 100.0,
+      "outflow": 89.9936961904689,
+      "velocity": 2.0,
+      "water_level": 8.7
+    },
+    {
+      "t_index": 1,
+      "inflow": 120.0,
+      "outflow": 917.7357696036183,
+      "velocity": 2.049916708323414,
+      "water_level": 8.699000833055605
+    },
+    {
+      "t_index": 2,
+      "inflow": 150.0,
+      "outflow": 85.43346046373995,
+      "velocity": 2.0993346653975307,
+      "water_level": 8.696013315568248
+    },
+    {
+      "t_index": 3,
+      "inflow": 180.0,
+      "outflow": 1634.8368787873594,
+      "velocity": 2.1477601033306697,
+      "water_level": 8.691067297825121
+    },
+    {
+      "t_index": 4,
+      "inflow": 160.0,
+      "outflow": 107.94209144955188,
+      "velocity": 2.1947091711543254,
+      "water_level": 8.684212198800576
+    },
+    {
+      "t_index": 5,
+      "inflow": 140.0,
+      "outflow": 1158.511823321572,
+      "velocity": 2.2397127693021015,
+      "water_level": 8.675516512378074
+    },
+    {
+      "t_index": 6,
+      "inflow": 120.0,
+      "outflow": 95.42667171616586,
+      "velocity": 2.2823212366975176,
+      "water_level": 8.665067122981936
+    },
+    {
+      "t_index": 7,
+      "inflow": 110.0,
+      "outflow": 819.7291659519638,
+      "velocity": 2.3221088436188455,
+      "water_level": 8.652968437456897
+    },
+    {
+      "t_index": 8,
+      "inflow": 100.0,
+      "outflow": 77.64302527394254,
+      "velocity": 2.3586780454497616,
+      "water_level": 8.639341341869432
+    }
+  ],
+  "stats": {
+    "inflow_mean": 131.11111111111111,
+    "inflow_max": 180.0,
+    "outflow_mean": 554.1391758620425,
+    "outflow_max": 1634.8368787873594,
+    "velocity_mean": 2.1882823936971296,
+    "water_level_mean": 8.678131895548432
+  }
+}

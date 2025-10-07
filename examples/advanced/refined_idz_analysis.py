@@ -274,7 +274,7 @@ class PreciseIDZAnalyzer:
                 axes[i].set_visible(False)
             
             plt.tight_layout()
-            save_path = f"{save_prefix}{scenario_name}_精确IDZ拟合结果.png"
+            save_path = f"{save_prefix}{scenario_name}_精确IDZ拟合结果.svg"
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
             print(f"拟合结果图已保存: {save_path}")
             plt.show()

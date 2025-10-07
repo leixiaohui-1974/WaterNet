@@ -200,7 +200,7 @@ def plot_comparison_results(comparison_results, scenario):
         axes[j].set_visible(False)
     
     plt.tight_layout()
-    filename = f'{scenario}_水力学vs IDZ对比.png'
+    filename = f'{scenario}_水力学vs IDZ对比.svg'
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.show()
     print(f"✅ 对比图已保存: {filename}")

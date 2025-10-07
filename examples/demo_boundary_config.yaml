@@ -1,0 +1,68 @@
+boundary_conditions:
+- description: 上游入流边界条件
+  enabled: true
+  flow_function:
+    interpolation: linear
+    times:
+    - 0
+    - 3600
+    - 7200
+    type: time_series
+    values:
+    - 50.0
+    - 60.0
+    - 55.0
+  name: 上游流量边界
+  node_name: 上游节点
+  type: flow_boundary
+- description: 下游水位边界条件
+  enabled: true
+  name: 下游水位边界
+  node_name: 下游节点
+  stage_value: 100.0
+  type: stage_boundary
+- curve_params:
+    discharge_coefficient: 2.5
+    exponent: 1.5
+    reference_level: 99.0
+  curve_type: weir
+  description: 堰流水位流量关系
+  enabled: true
+  flow_node: 出口流量
+  name: 堰流关系
+  stage_node: 出口水位
+  type: rating_curve_boundary
+control_signals:
+  devices:
+  - default_value: 0.5
+    device_id: 主闸门
+    device_type: gate
+    max_value: 1.0
+    min_value: 0.0
+  - default_value: 0.0
+    device_id: 辅助泵
+    device_type: pump
+    max_value: 1.0
+    min_value: 0.0
+  schedule:
+    devices:
+    - 主闸门
+    - 辅助泵
+    interpolation: linear
+    step_times:
+    - 0
+    - 1800
+    - 3600
+    step_values:
+    - 主闸门: 0.5
+      辅助泵: 0.0
+    - 主闸门: 0.8
+      辅助泵: 0.5
+    - 主闸门: 1.0
+      辅助泵: 1.0
+    type: step_schedule
+metadata:
+  author: WaterNet用户
+  created_at: '2025-10-07T13:56:54.216305'
+  description: WaterNet边界条件和控制信号配置模板
+  version: '1.0'

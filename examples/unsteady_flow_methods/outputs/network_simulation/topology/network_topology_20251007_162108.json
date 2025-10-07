@@ -1,0 +1,38 @@
+{
+  "network_name": "demo_water_network",
+  "timestamp": "20251007_162108",
+  "nodes": [
+    {
+      "id": "upstream_channel",
+      "type": "channel",
+      "elevation": 100.0
+    },
+    {
+      "id": "downstream_channel",
+      "type": "channel",
+      "elevation": 98.7
+    },
+    {
+      "id": "junction_1",
+      "type": "junction",
+      "elevation": 99.1
+    }
+  ],
+  "edges": [
+    {
+      "from": "upstream_channel",
+      "to": "junction_1",
+      "type": "flow"
+    },
+    {
+      "from": "junction_1",
+      "to": "downstream_channel",
+      "type": "flow"
+    }
+  ],
+  "properties": {
+    "total_length": 5000.0,
+    "node_count": 3,
+    "edge_count": 2
+  }
+}

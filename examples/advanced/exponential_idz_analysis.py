@@ -303,8 +303,8 @@ def plot_exponential_fits(all_fits):
             axes[i].set_visible(False)
         
         plt.tight_layout()
-        plt.savefig(f"{scenario}_指数响应IDZ拟合结果.png", dpi=300, bbox_inches='tight')
-        print(f"拟合结果图已保存: {scenario}_指数响应IDZ拟合结果.png")
+        plt.savefig(f"{scenario}_指数响应IDZ拟合结果.svg", dpi=300, bbox_inches='tight')
+        print(f"拟合结果图已保存: {scenario}_指数响应IDZ拟合结果.svg")
         plt.show()
 
 def create_transfer_function_summary(df):

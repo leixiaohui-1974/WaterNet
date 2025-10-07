@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "object_id": "demo_channel",
+    "export_time": "2025-10-07T16:20:53.046259",
+    "categories": [
+      "time_series",
+      "spatial_profiles",
+      "statistics",
+      "diagnostics"
+    ]
+  },
+  "time_series": {},
+  "spatial_profiles": {},
+  "statistics": {},
+  "diagnostics": {}
+}

@@ -1,0 +1,29 @@
+{
+  "hydraulic_properties": {
+    "calculation_success": true,
+    "design_flow_capacity": "120.0 m³/s",
+    "normal_water_level": "84.30 m",
+    "storage_capacity": "20146575 m³",
+    "total_head_loss": "0.000 m",
+    "inflow_rate": "120.0 m³/s",
+    "outflow_rate": "120.0 m³/s",
+    "average_velocity": "未计算",
+    "froude_number": "未计算",
+    "hydraulic_efficiency": "excellent",
+    "flow_regime": "subcritical",
+    "mass_balance_check": "入流-出流 = 0.000 m³/s (balanced)",
+    "energy_balance_analysis": "水头损失率: 0.00 mm·s/m³",
+    "performance_rating": "设计指标合格",
+    "technical_notes": "基于MUSKINGUM_MODEL模型的水力计算结果"
+  },
+  "water_surface_profile": {
+    "success": true,
+    "report_path": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\outputs\\simplified_demo\\digital_twin\\original\\plots\\analysis_report.md",
+    "output_dir": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\outputs\\simplified_demo\\digital_twin\\original\\plots",
+    "flow": 120.0,
+    "longitudinal_plot_path": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\outputs\\simplified_demo\\digital_twin\\original\\plots\\flow_comparison.svg",
+    "cross_section_plot_path": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\outputs\\simplified_demo\\digital_twin\\original\\plots\\cross_sections_optimized_Q120.svg",
+    "channel_object": "smart_channel",
+    "results_count": 1
+  }
+}

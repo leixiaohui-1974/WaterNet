@@ -176,8 +176,8 @@ def create_parameter_distribution_plot(df):
         cbar.set_label('时间常数 τ (分钟)', fontsize=10)
     
     plt.tight_layout()
-    plt.savefig("指数响应IDZ模型参数分布总结.png", dpi=300, bbox_inches='tight')
-    print("参数分布图已保存: 指数响应IDZ模型参数分布总结.png")
+    plt.savefig("指数响应IDZ模型参数分布总结.svg", dpi=300, bbox_inches='tight')
+    print("参数分布图已保存: 指数响应IDZ模型参数分布总结.svg")
     plt.show()
 
 def create_transfer_function_table(df):

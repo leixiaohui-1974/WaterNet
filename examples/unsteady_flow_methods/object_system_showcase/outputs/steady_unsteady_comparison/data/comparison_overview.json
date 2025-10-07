@@ -1,0 +1,53 @@
+{
+  "steady_flow": [
+    {
+      "variant": {
+        "key": "gentle_mixed",
+        "name": "缓坡复合断面渠道",
+        "slope": 0.0002,
+        "section_count": 11,
+        "nodes": 11,
+        "base_roughness": 0.028
+      },
+      "summary_path": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\data\\gentle_mixed\\gentle_mixed_steady_summary.json",
+      "artefacts": {
+        "multi_scenario_plot": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\plots\\gentle_mixed\\gentle_mixed_flow_comparison.svg",
+        "analysis_report": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\plots\\gentle_mixed\\analysis_report.md",
+        "enhanced_profile": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\plots\\gentle_mixed\\profiles\\channel_gentle_mixed_steady_flow_profile_20251008_054304.svg"
+      }
+    },
+    {
+      "variant": {
+        "key": "transition_rect",
+        "name": "中坡矩形-梯形复合渠道",
+        "slope": 0.00035,
+        "section_count": 11,
+        "nodes": 11,
+        "base_roughness": 0.027
+      },
+      "summary_path": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\data\\transition_rect\\transition_rect_steady_summary.json",
+      "artefacts": {
+        "multi_scenario_plot": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\plots\\transition_rect\\transition_rect_flow_comparison.svg",
+        "analysis_report": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\plots\\transition_rect\\analysis_report.md",
+        "enhanced_profile": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\plots\\transition_rect\\profiles\\channel_transition_rect_steady_flow_profile_20251008_054336.svg"
+      }
+    },
+    {
+      "variant": {
+        "key": "steep_wide",
+        "name": "陡坡大断面渠道",
+        "slope": 0.0005,
+        "section_count": 11,
+        "nodes": 11,
+        "base_roughness": 0.029
+      },
+      "summary_path": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\data\\steep_wide\\steep_wide_steady_summary.json",
+      "artefacts": {
+        "multi_scenario_plot": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\plots\\steep_wide\\steep_wide_flow_comparison.svg",
+        "analysis_report": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\plots\\steep_wide\\analysis_report.md",
+        "enhanced_profile": "E:\\OneDrive\\Documents\\GitHub\\WaterNet\\examples\\unsteady_flow_methods\\object_system_showcase\\outputs\\steady_unsteady_comparison\\steady_flow\\plots\\steep_wide\\profiles\\channel_steep_wide_steady_flow_profile_20251008_054413.svg"
+      }
+    }
+  ],
+  "unsteady_flow": null
+}

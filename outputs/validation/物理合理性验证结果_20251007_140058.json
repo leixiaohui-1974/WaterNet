@@ -1,0 +1,233 @@
+{
+  "马斯京干模型": {
+    "method_name": "马斯京干模型",
+    "method_type": "muskingum_model",
+    "validation_timestamp": "2025-10-07T14:00:58.705448",
+    "physical_checks": {
+      "mass_conservation": {
+        "status": "FAIL",
+        "max_relative_error": 0.72,
+        "continuity_errors": [
+          {
+            "时间步": 0,
+            "入流": 100.0,
+            "出流": 28.0,
+            "相对误差": 0.72
+          },
+          {
+            "时间步": 1,
+            "入流": 120.0,
+            "出流": 46.400000000000006,
+            "相对误差": 0.6133333333333333
+          },
+          {
+            "时间步": 2,
+            "入流": 150.0,
+            "出流": 67.12,
+            "相对误差": 0.5525333333333333
+          },
+          {
+            "时间步": 3,
+            "入流": 130.0,
+            "出流": 79.696,
+            "相对误差": 0.38695384615384615
+          },
+          {
+            "时间步": 4,
+            "入流": 110.0,
+            "出流": 85.7568,
+            "相对误差": 0.2203927272727273
+          },
+          {
+            "时间步": 5,
+            "入流": 95.0,
+            "出流": 87.60544,
+            "相对误差": 0.07783747368421051
+          }
+        ],
+        "details": {
+          "检查点数": 6,
+          "最大相对误差": "0.7200",
+          "超标点数": 6
+        }
+      },
+      "velocity_characteristics": {
+        "status": "PASS",
+        "velocity_range": [
+          0.7,
+          2.190136
+        ],
+        "froude_numbers": [
+          0.1580332743450058,
+          0.2618837117717239,
+          0.37882833478702826,
+          0.44980785114998506,
+          0.4840152821910641,
+          0.4944490904869623
+        ],
+        "method_compliance": "UNKNOWN",
+        "details": {
+          "平均流速": "1.644 m/s",
+          "平均弗劳德数": "0.371",
+          "合理流速占比": "100.0%"
+        }
+      },
+      "storage_variation": {
+        "status": "PASS",
+        "storage_range": [
+          659200.0,
+          1517518.336
+        ],
+        "max_change_rate": 0.40194174757281553,
+        "details": {
+          "蓄量范围": "659200 - 1517518 m³",
+          "最大变化率": "0.402",
+          "总变化": "858318 m³"
+        }
+      },
+      "method_assumptions": {
+        "status": "WARNING",
+        "assumption_violations": [
+          "存储-泄流关系可能非线性"
+        ],
+        "compliance_score": 0.6666666666666666,
+        "details": {
+          "方法类型": "muskingum_model",
+          "合规性评分": "0.67",
+          "违背假设数": 1
+        }
+      }
+    },
+    "warnings": [],
+    "errors": [],
+    "overall_validity": "ACCEPTABLE_WITH_WARNINGS"
+  },
+  "完整圣维南方程": {
+    "method_name": "完整圣维南方程",
+    "method_type": "saint_venant_full",
+    "validation_timestamp": "2025-10-07T14:00:58.706616",
+    "physical_checks": {
+      "mass_conservation": {
+        "status": "PASS",
+        "max_relative_error": 0.016666666666666666,
+        "continuity_errors": [],
+        "details": {
+          "检查点数": 6,
+          "最大相对误差": "0.0167",
+          "超标点数": 0
+        }
+      },
+      "velocity_characteristics": {
+        "status": "PASS",
+        "velocity_range": [
+          2.38125,
+          3.6875
+        ],
+        "froude_numbers": [
+          0.5644045512321636,
+          0.6716414159662747,
+          0.8324967130674413,
+          0.7252598483333302,
+          0.6180229835992191,
+          0.5375953350486359
+        ],
+        "method_compliance": "UNKNOWN",
+        "details": {
+          "平均流速": "2.916 m/s",
+          "平均弗劳德数": "0.658",
+          "合理流速占比": "100.0%"
+        }
+      },
+      "storage_variation": {
+        "status": "PASS",
+        "storage_range": [
+          1695000.0,
+          1750000.0
+        ],
+        "max_change_rate": 0.01744186046511628,
+        "details": {
+          "蓄量范围": "1695000 - 1750000 m³",
+          "最大变化率": "0.017",
+          "总变化": "55000 m³"
+        }
+      },
+      "method_assumptions": {
+        "status": "PASS",
+        "assumption_violations": [],
+        "compliance_score": 1.0,
+        "details": {
+          "方法类型": "saint_venant_full",
+          "合规性评分": "1.00",
+          "违背假设数": 0
+        }
+      }
+    },
+    "warnings": [],
+    "errors": [],
+    "overall_validity": "VALID"
+  },
+  "扩散波方程": {
+    "method_name": "扩散波方程",
+    "method_type": "diffusive_wave",
+    "validation_timestamp": "2025-10-07T14:00:58.707738",
+    "physical_checks": {
+      "mass_conservation": {
+        "status": "PASS",
+        "max_relative_error": 0.05,
+        "continuity_errors": [],
+        "details": {
+          "检查点数": 6,
+          "最大相对误差": "0.0500",
+          "超标点数": 0
+        }
+      },
+      "velocity_characteristics": {
+        "status": "PASS",
+        "velocity_range": [
+          2.39375,
+          3.5625
+        ],
+        "froude_numbers": [
+          0.5644045512321636,
+          0.6603533249416313,
+          0.8042764855058331,
+          0.7083277117963653,
+          0.6123789380868975,
+          0.5404173578047966
+        ],
+        "method_compliance": "COMPLIANT",
+        "details": {
+          "平均流速": "2.872 m/s",
+          "平均弗劳德数": "0.648",
+          "合理流速占比": "100.0%"
+        }
+      },
+      "storage_variation": {
+        "status": "PASS",
+        "storage_range": [
+          1646000.0,
+          1690000.0
+        ],
+        "max_change_rate": 0.014405762304921969,
+        "details": {
+          "蓄量范围": "1646000 - 1690000 m³",
+          "最大变化率": "0.014",
+          "总变化": "44000 m³"
+        }
+      },
+      "method_assumptions": {
+        "status": "PASS",
+        "assumption_violations": [],
+        "compliance_score": 1.0,
+        "details": {
+          "方法类型": "diffusive_wave",
+          "合规性评分": "1.00",
+          "违背假设数": 0
+        }
+      }
+    },
+    "warnings": [],
+    "errors": [],
+    "overall_validity": "VALID"
+  }
+}

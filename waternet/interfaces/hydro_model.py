@@ -63,6 +63,10 @@ class HydroModel(ABC):
         
         self.name = name
         self._node_names = node_names.copy()  # 防止外部修改
+        
+        # 初始化logger
+        import logging
+        self.logger = logging.getLogger(f"HydroModel.{name}")
     
     @property
     def node_names(self) -> List[str]:

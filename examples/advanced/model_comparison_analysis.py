@@ -458,7 +458,7 @@ def main():
         # 绘制对比图
         plot_comparison_results(
             comparison_results, scenario_name, 
-            f"{scenario_name}_原模型与IDZ模型对比.png"
+            f"{scenario_name}_原模型与IDZ模型对比.svg"
         )
         
         # 输出关键指标

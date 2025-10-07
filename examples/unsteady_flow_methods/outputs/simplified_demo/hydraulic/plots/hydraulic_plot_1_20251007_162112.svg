@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400">
+<rect width="100%" height="100%" fill="#f9fafb"/>
+<line x1="50" y1="350" x2="750" y2="80" stroke="#22c55e" stroke-width="2"/>
+<text x="50" y="30" font-size="16" fill="#111827">Hydraulic Analysis</text>
+</svg>

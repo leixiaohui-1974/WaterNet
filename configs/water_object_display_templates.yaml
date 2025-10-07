@@ -1,0 +1,495 @@
+# 水系统对象标准化展示模板配置
+# 基于用户偏好记忆设计，支持配置驱动的系统建模
+
+# 全局显示规范
+global_display_settings:
+  # 字体显示规范 - 用户偏好记忆要求
+  font_settings:
+    legend_font_scale: 2.0          # 图例字体放大2倍
+    chinese_font_scale: 3.0         # 汉字字体放大3倍（从1像素变为3像素）
+    number_font_scale: 2.0          # 数字字体翻倍
+    number_color: "red"             # 数字用红色突出显示
+    chinese_color: "black"          # 汉字用黑色普通显示
+  
+  # 图形显示规范
+  graphic_settings:
+    symbol_border_width: 3.0        # 图例符号边框线条加粗至3.0
+    symbol_color_enhancement: true   # 图例符号颜色加深
+    node_label_offset: "radius + 0.8"  # 节点标签偏移距离为节点半径+0.8单位
+    edge_label_offset: 0.3          # 边标签垂直于线条方向偏移0.3单位
+    water_level_offset: "radius + 0.5"  # 水位数字置于节点下方，偏移距离为节点半径+0.5单位
+    text_background: true           # 所有文字添加适当的背景框
+    text_alignment: "top"           # 水位数字采用顶部对齐
+  
+  # 多重拓扑图展示方式
+  topology_modes:
+    - "simple_flowchart"    # 简洁流程图
+    - "flow_diagram"        # 流向示意图  
+    - "table_mode"          # 表格模式
+    - "graphic_mode"        # 图形化模式
+    auto_selection: true    # 根据数据特点智能选择最佳展示方式
+
+# 输水对象展示模板
+conveyance_objects:
+  channel:
+    display_name: "河道/渠道"
+    symbol:
+      type: "channel"
+      color: "#4A90E2"
+      border_color: "#2E5A8A" 
+      border_width: 3.0
+      size: [40, 20]
+    properties:
+      - name: "长度"
+        unit: "m"
+        display_format: "%.1f"
+      - name: "设计流量"
+        unit: "m³/s"
+        display_format: "%.2f"
+      - name: "水位"
+        unit: "m"
+        display_format: "%.2f"
+        color: "red"
+        position: "below_node"
+        offset: "radius + 0.5"
+    visualization_templates:
+      - "longitudinal_profile"
+      - "flow_time_series"
+      - "water_surface_profile"
+    
+  pipe:
+    display_name: "管道"
+    symbol:
+      type: "pipe"
+      color: "#7B68EE"
+      border_color: "#4B0082"
+      border_width: 3.0
+      size: [35, 15]
+    properties:
+      - name: "长度"
+        unit: "m"
+        display_format: "%.1f"
+      - name: "直径"
+        unit: "m"
+        display_format: "%.2f"
+      - name: "压力"
+        unit: "m"
+        display_format: "%.2f"
+        color: "red"
+        position: "below_node"
+    visualization_templates:
+      - "pressure_line"
+      - "pressure_time_series"
+      - "flow_time_series"
+      
+  siphon:
+    display_name: "倒虹吸"
+    symbol:
+      type: "siphon"
+      color: "#FF6B35"
+      border_color: "#CC3300"
+      border_width: 3.0
+      size: [30, 25]
+    properties:
+      - name: "长度"
+        unit: "m"
+        display_format: "%.1f"
+      - name: "流量"
+        unit: "m³/s"
+        display_format: "%.2f"
+        color: "red"
+    visualization_templates:
+      - "siphon_profile"
+      - "flow_time_series"
+
+# 存储对象展示模板  
+storage_objects:
+  reservoir:
+    display_name: "水库"
+    symbol:
+      type: "reservoir"
+      color: "#1E90FF"
+      border_color: "#0066CC"
+      border_width: 3.0
+      size: [50, 35]
+    properties:
+      - name: "库容"
+        unit: "万m³"
+        display_format: "%.1f"
+      - name: "水位"
+        unit: "m"
+        display_format: "%.2f"
+        color: "red"
+        position: "below_node"
+        offset: "radius + 0.5"
+        alignment: "top"
+      - name: "入流"
+        unit: "m³/s"
+        display_format: "%.2f"
+      - name: "出流"
+        unit: "m³/s"
+        display_format: "%.2f"
+    visualization_templates:
+      - "reservoir_operation"
+      - "water_balance"
+      - "capacity_curve"
+      
+  lake:
+    display_name: "湖泊"
+    symbol:
+      type: "lake"
+      color: "#00CED1"
+      border_color: "#008B8B"
+      border_width: 3.0
+      size: [45, 30]
+    properties:
+      - name: "面积"
+        unit: "km²"
+        display_format: "%.2f"
+      - name: "水位"
+        unit: "m"
+        display_format: "%.2f"
+        color: "red"
+        position: "below_node"
+    visualization_templates:
+      - "lake_level"
+      - "water_quality"
+      
+  storage_tank:
+    display_name: "调蓄池"
+    symbol:
+      type: "tank"
+      color: "#32CD32"
+      border_color: "#228B22"
+      border_width: 3.0
+      size: [30, 30]
+    properties:
+      - name: "容量"
+        unit: "m³"
+        display_format: "%.0f"
+      - name: "水位"
+        unit: "m"
+        display_format: "%.2f"
+        color: "red"
+        position: "below_node"
+    visualization_templates:
+      - "tank_operation"
+      - "volume_time_series"
+
+# 调控对象展示模板
+control_objects:
+  gate:
+    display_name: "闸"
+    symbol:
+      type: "gate"
+      color: "#FF4500"
+      border_color: "#CC3300"
+      border_width: 3.0
+      size: [25, 20]
+    properties:
+      - name: "开度"
+        unit: "%"
+        display_format: "%.1f"
+        color: "red"
+      - name: "流量"
+        unit: "m³/s"
+        display_format: "%.2f"
+      - name: "状态"
+        display_format: "%s"
+    control_modes:
+      - "manual"
+      - "automatic"
+      - "scheduled"
+    visualization_templates:
+      - "gate_operation"
+      - "discharge_curve"
+      
+  pump:
+    display_name: "泵"
+    symbol:
+      type: "pump"
+      color: "#FF69B4"
+      border_color: "#C71585"
+      border_width: 3.0
+      size: [25, 25]
+    properties:
+      - name: "转速"
+        unit: "%"
+        display_format: "%.1f"
+        color: "red"
+      - name: "流量"
+        unit: "m³/s"
+        display_format: "%.2f"
+      - name: "扬程"
+        unit: "m"
+        display_format: "%.1f"
+      - name: "效率"
+        unit: "%"
+        display_format: "%.1f"
+    control_modes:
+      - "manual"
+      - "automatic"
+      - "optimization"
+    visualization_templates:
+      - "pump_performance"
+      - "efficiency_curve"
+      
+  valve:
+    display_name: "阀"
+    symbol:
+      type: "valve"
+      color: "#9370DB"
+      border_color: "#663399"
+      border_width: 3.0
+      size: [20, 20]
+    properties:
+      - name: "开度"
+        unit: "%"
+        display_format: "%.1f"
+        color: "red"
+      - name: "流量比"
+        unit: "%"
+        display_format: "%.1f"
+      - name: "压降"
+        unit: "m"
+        display_format: "%.2f"
+    control_modes:
+      - "manual"
+      - "automatic"
+    visualization_templates:
+      - "valve_characteristics"
+      - "flow_control"
+      
+  turbine:
+    display_name: "水轮机"
+    symbol:
+      type: "turbine"
+      color: "#FFD700"
+      border_color: "#B8860B"
+      border_width: 3.0
+      size: [30, 30]
+    properties:
+      - name: "导叶开度"
+        unit: "%"
+        display_format: "%.1f"
+        color: "red"
+      - name: "功率"
+        unit: "MW"
+        display_format: "%.2f"
+      - name: "效率"
+        unit: "%"
+        display_format: "%.1f"
+    control_modes:
+      - "manual"
+      - "automatic"
+      - "optimization"
+    visualization_templates:
+      - "power_generation"
+      - "efficiency_curve"
+
+# 枢纽站展示模板
+station_objects:
+  hub_station:
+    display_name: "枢纽站"
+    symbol:
+      type: "hub"
+      color: "#800080"
+      border_color: "#4B0082"
+      border_width: 3.0
+      size: [60, 40]
+    properties:
+      - name: "设备数量"
+        display_format: "%d"
+      - name: "运行模式"
+        display_format: "%s"
+      - name: "复杂度"
+        display_format: "%s"
+    visualization_templates:
+      - "system_overview"
+      - "device_status"
+      - "coordination_control"
+      
+  pump_station:
+    display_name: "泵站"
+    symbol:
+      type: "pump_station"
+      color: "#DC143C"
+      border_color: "#8B0000"
+      border_width: 3.0
+      size: [55, 35]
+    properties:
+      - name: "泵组数量"
+        display_format: "%d"
+      - name: "总流量"
+        unit: "m³/s"
+        display_format: "%.2f"
+        color: "red"
+      - name: "总扬程"
+        unit: "m"
+        display_format: "%.1f"
+    visualization_templates:
+      - "pump_station_operation"
+      - "pump_combination"
+      
+  gate_station:
+    display_name: "闸站"
+    symbol:
+      type: "gate_station"
+      color: "#FF8C00"
+      border_color: "#CD5C5C"
+      border_width: 3.0
+      size: [50, 30]
+    properties:
+      - name: "闸门数量"
+        display_format: "%d"
+      - name: "总流量"
+        unit: "m³/s"
+        display_format: "%.2f"
+        color: "red"
+      - name: "平均开度"
+        unit: "%"
+        display_format: "%.1f"
+    visualization_templates:
+      - "gate_station_operation"
+      - "flow_distribution"
+      
+  power_station:
+    display_name: "电站"
+    symbol:
+      type: "power_station"
+      color: "#F0E68C"
+      border_color: "#DAA520"
+      border_width: 3.0
+      size: [55, 40]
+    properties:
+      - name: "机组数量"
+        display_format: "%d"
+      - name: "总功率"
+        unit: "MW"
+        display_format: "%.1f"
+        color: "red"
+      - name: "平均效率"
+        unit: "%"
+        display_format: "%.1f"
+    visualization_templates:
+      - "power_generation"
+      - "unit_coordination"
+
+# 拓扑图展示配置
+topology_display:
+  # 智能选择规则
+  auto_selection_rules:
+    - condition: "node_count <= 5"
+      recommended_mode: "simple_flowchart"
+    - condition: "node_count <= 15"
+      recommended_mode: "flow_diagram"
+    - condition: "node_count <= 50"
+      recommended_mode: "graphic_mode"
+    - condition: "node_count > 50"
+      recommended_mode: "table_mode"
+  
+  # 简洁流程图模式
+  simple_flowchart:
+    node_spacing: 100
+    level_spacing: 80
+    show_labels: true
+    show_properties: false
+    line_style: "solid"
+    arrow_style: "simple"
+    
+  # 流向示意图模式
+  flow_diagram:
+    node_spacing: 120
+    level_spacing: 100
+    show_labels: true
+    show_properties: true
+    show_flow_direction: true
+    line_style: "solid"
+    arrow_style: "detailed"
+    flow_animation: true
+    
+  # 表格模式
+  table_mode:
+    columns:
+      - "对象ID"
+      - "类型"
+      - "状态"
+      - "主要参数"
+    sortable: true
+    filterable: true
+    export_format: ["csv", "excel"]
+    
+  # 图形化模式
+  graphic_mode:
+    layout_algorithm: "hierarchical"
+    node_spacing: 80
+    show_all_properties: true
+    interactive: true
+    zoom_enabled: true
+    pan_enabled: true
+
+# 可视化模板定义
+visualization_templates:
+  longitudinal_profile:
+    title: "纵剖面图"
+    x_label: "距离 (m)"
+    y_label: "高程 (m)"
+    series:
+      - name: "底高程"
+        color: "brown"
+        line_style: "solid"
+      - name: "水面线"
+        color: "blue"
+        line_style: "solid"
+    grid: true
+    legend: true
+    
+  pressure_line:
+    title: "压力线图"
+    x_label: "距离 (m)"
+    y_label: "压力水头 (m)"
+    series:
+      - name: "管底高程"
+        color: "black"
+        line_style: "solid"
+      - name: "压力线"
+        color: "red"
+        line_style: "solid"
+    grid: true
+    legend: true
+    
+  reservoir_operation:
+    title: "水库运行图"
+    x_label: "时间"
+    y_label: "水位/流量"
+    series:
+      - name: "水位"
+        color: "blue"
+        y_axis: "left"
+      - name: "入流"
+        color: "green"
+        y_axis: "right"
+      - name: "出流"
+        color: "red"
+        y_axis: "right"
+    dual_y_axis: true
+    grid: true
+    legend: true
+
+# 配置验证规则
+validation_rules:
+  required_fields:
+    - "display_name"
+    - "symbol"
+    - "properties"
+  
+  symbol_requirements:
+    - "type"
+    - "color"
+    - "border_color"
+    - "border_width"
+    - "size"
+  
+  property_requirements:
+    - "name"
+    - "display_format"

@@ -252,7 +252,7 @@ class DistributedIDZModel:
             ax4.legend(fontsize=8)
             
             plt.tight_layout()
-            save_path = f"{save_prefix}{scenario}_传递函数分析.png"
+            save_path = f"{save_prefix}{scenario}_传递函数分析.svg"
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
             print(f"传递函数分析图已保存: {save_path}")
             plt.show()

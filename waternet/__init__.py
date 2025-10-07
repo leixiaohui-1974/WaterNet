@@ -52,6 +52,23 @@ try:
 except ImportError:
     SynchronizedTwinningHarness = None
 
+# 核心库模块 (根据用户记忆要求)
+try:
+    from .core import (
+        UnsteadyFlowAnalyzer,
+        ParameterOptimizer,
+        OptimizationObjective,
+        WaterSystemSimulationManager,
+        SimulationStrategy
+    )
+except ImportError:
+    # 核心库模块不可用时的回退定义
+    UnsteadyFlowAnalyzer = None
+    ParameterOptimizer = None
+    OptimizationObjective = None
+    WaterSystemSimulationManager = None
+    SimulationStrategy = None
+
 # 简化API工厂函数
 from .utils.model_factory import (
     create_simple_muskingum,
@@ -93,6 +110,13 @@ __all__ = [
     'ParameterEstimator',
     'SynchronizedTwinningHarness',
     'AccuracyComparator',
+    
+    # 核心库模块
+    'UnsteadyFlowAnalyzer',
+    'ParameterOptimizer',
+    'OptimizationObjective',
+    'WaterSystemSimulationManager',
+    'SimulationStrategy',
     
     # 简化API
     'create_simple_muskingum',
